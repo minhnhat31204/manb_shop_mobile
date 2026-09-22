@@ -15,6 +15,135 @@ class OrderHistoryScreen extends StatelessWidget {
     return '${result.replaceAllMapped(reg, (Match m) => '${m[1]}.')} đ';
   }
 
+  // Bổ trợ lấy URL hình ảnh linh hoạt hỗ trợ mọi kiểu cấu trúc API
+  String? _getImageUrl(dynamic item) {
+    if (item == null) return null;
+    final product = item['Product'] ?? item['product'] ?? item;
+    return product['ImageUrl'] ??
+        product['IMAGEURL'] ??
+        product['imageUrl'] ??
+        product['Image'] ??
+        product['IMAGE'] ??
+        item['ImageUrl'] ??
+        item['IMAGEURL'] ??
+        item['imageUrl'] ??
+        item['Image'];
+  }
+
+  // Widget hiển thị Thumbnail (1 ảnh hoặc 2 ảnh đè lên nhau)
+  Widget _buildOrderThumbnail(List items) {
+    const double size = 56.0;
+
+    if (items.isEmpty) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: const Icon(Icons.shopping_bag_outlined, color: Colors.grey),
+      );
+    }
+
+    // Trường hợp 1 sản phẩm: Hiển thị 1 ảnh duy nhất
+    if (items.length == 1) {
+      final String? imageUrl = _getImageUrl(items[0]);
+      return Container(
+        width: size,
+        height: size,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: imageUrl != null && imageUrl.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.computer, color: Colors.grey),
+                ),
+              )
+            : const Icon(Icons.computer, color: Colors.grey),
+      );
+    }
+
+    // Trường hợp từ 2 sản phẩm trở lên: Đè 2 ảnh lên nhau giống App mẫu Phong Vũ
+    final String? img1 = _getImageUrl(items[0]);
+    final String? img2 = _getImageUrl(items[1]);
+
+    return SizedBox(
+      width: size + 10,
+      height: size + 6,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Ảnh sản phẩm thứ 2 (nằm bên dưới/phía sau)
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: size - 8,
+              height: size - 8,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: img2 != null && img2.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                        img2,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.computer, size: 20, color: Colors.grey),
+                      ),
+                    )
+                  : const Icon(Icons.computer, size: 20, color: Colors.grey),
+            ),
+          ),
+          // Ảnh sản phẩm thứ 1 (nằm đè lên trên)
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: size - 4,
+              height: size - 4,
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.grey.shade300),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(-2, 2),
+                  )
+                ],
+              ),
+              child: img1 != null && img1.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                        img1,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.computer, size: 24, color: Colors.grey),
+                      ),
+                    )
+                  : const Icon(Icons.computer, size: 24, color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userId = Provider.of<UserProvider>(context, listen: false).currentUserId;
@@ -22,17 +151,17 @@ class OrderHistoryScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC), // Nền xám trắng nhạt
+        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1D4ED8), // Xanh chủ đạo
-          foregroundColor: Colors.white, // Chữ/Icon màu trắng
+          backgroundColor: const Color(0xFF1D4ED8),
+          foregroundColor: Colors.white,
           elevation: 0,
           title: const Text('Quản lý đơn hàng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           bottom: const TabBar(
-            indicatorColor: Colors.white, // Đường gạch chân Tab màu trắng
+            indicatorColor: Colors.white,
             indicatorWeight: 3,
-            labelColor: Colors.white, // Chữ tab đang chọn màu trắng
-            unselectedLabelColor: Colors.white70, // Chữ tab chưa chọn màu trắng mờ
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
             labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
               Tab(text: 'Chờ xác nhận'),
@@ -67,7 +196,6 @@ class OrderHistoryScreen extends StatelessWidget {
     final filtered = orders.where((o) {
       final rawStatus = (o['STATUS'] ?? o['Status'] ?? o['status'] ?? '').toString().trim().toLowerCase();
       
-      // Ánh xạ trạng thái Tiếng Anh (API) và Tiếng Việt (UI)
       if (targetStatus == 'Chờ xác nhận') {
         return rawStatus == 'pending' || rawStatus == 'chờ xác nhận';
       } else if (targetStatus == 'Đang giao') {
@@ -75,7 +203,6 @@ class OrderHistoryScreen extends StatelessWidget {
       } else if (targetStatus == 'Đã giao') {
         return rawStatus == 'completed' || rawStatus == 'delivered' || rawStatus == 'đã giao';
       }
-      
       return false;
     }).toList();
 
@@ -90,34 +217,28 @@ class OrderHistoryScreen extends StatelessWidget {
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final order = filtered[index];
+        
+        // BỔ SUNG THÊM KEY order['Items']
+        final List items = order['Items'] ?? order['ITEMS'] ?? order['items'] ?? order['OrderItems'] ?? [];
+        
+        // Lấy tên sản phẩm đại diện
+        String firstProductName = 'Đơn hàng #${order['ORDERID'] ?? order['OrderID'] ?? order['ID']}';
+        if (items.isNotEmpty) {
+          final firstProduct = items[0]['Product'] ?? items[0]['product'] ?? items[0];
+          firstProductName = firstProduct['ProductName'] ?? 
+                             firstProduct['PRODUCTNAME'] ?? 
+                             firstProduct['Name'] ?? 
+                             items[0]['ProductName'] ?? 
+                             firstProductName;
+        }
 
         return Card(
           color: Colors.white,
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(12),
-            title: Text(
-              'Mã đơn: #${order['ORDERID'] ?? order['OrderID'] ?? order['orderId'] ?? order['ID']}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black87),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 6),
-                Text(
-                  'Tổng tiền: ${formatCurrency(order['TOTALAMOUNT'] ?? order['TotalAmount'] ?? order['totalAmount'])}',
-                  style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0), fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Phương thức: ${order['PAYMENTMETHOD'] ?? order['PaymentMethod'] ?? 'N/A'}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-            trailing: const Icon(Icons.chevron_right, color: Color(0xFF1D4ED8)),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
             onTap: () {
               Navigator.push(
                 context,
@@ -126,10 +247,64 @@ class OrderHistoryScreen extends StatelessWidget {
                 ),
               );
             },
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Mã đơn: ${order['ORDERID'] ?? order['OrderID'] ?? order['ID']}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.orange.shade300),
+                        ),
+                        child: Text(
+                          targetStatus.toUpperCase(),
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange.shade800),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildOrderThumbnail(items),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              firstProductName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              formatCurrency(order['TOTALAMOUNT'] ?? order['TotalAmount'] ?? order['totalAmount']),
+                              style: const TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },
     );
   }
-  
 }
