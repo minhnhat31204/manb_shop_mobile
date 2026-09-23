@@ -65,7 +65,7 @@ class OrderHistoryScreen extends StatelessWidget {
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.computer, color: Colors.grey),
+                  errorBuilder: (_, _, _) => const Icon(Icons.computer, color: Colors.grey),
                 ),
               )
             : const Icon(Icons.computer, color: Colors.grey),
@@ -101,7 +101,7 @@ class OrderHistoryScreen extends StatelessWidget {
                       child: Image.network(
                         img2,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.computer, size: 20, color: Colors.grey),
+                        errorBuilder: (_, _, _) => const Icon(Icons.computer, size: 20, color: Colors.grey),
                       ),
                     )
                   : const Icon(Icons.computer, size: 20, color: Colors.grey),
@@ -133,7 +133,7 @@ class OrderHistoryScreen extends StatelessWidget {
                       child: Image.network(
                         img1,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.computer, size: 24, color: Colors.grey),
+                        errorBuilder: (_, _, _) => const Icon(Icons.computer, size: 24, color: Colors.grey),
                       ),
                     )
                   : const Icon(Icons.computer, size: 24, color: Colors.grey),
@@ -153,7 +153,7 @@ class OrderHistoryScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1D4ED8),
+          backgroundColor: const Color(0xFF1E40AF),
           foregroundColor: Colors.white,
           elevation: 0,
           title: const Text('Quản lý đơn hàng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -176,7 +176,7 @@ class OrderHistoryScreen extends StatelessWidget {
                 future: ApiService.getOrdersByUserId(userId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: Color(0xFF1D4ED8)));
+                    return const Center(child: CircularProgressIndicator(color: Color(0xFF1E40AF)));
                   }
                   final orders = snapshot.data ?? [];
                   return TabBarView(

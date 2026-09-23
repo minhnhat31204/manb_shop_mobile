@@ -42,7 +42,7 @@ class AddressBookScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1D4ED8),
+        backgroundColor: const Color(0xFF1E40AF),
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text(
@@ -69,7 +69,7 @@ class AddressBookScreen extends StatelessWidget {
                       _openMap(context, address), // Bấm vào thẻ để mở Google Maps
                   leading: const Icon(
                     Icons.location_on,
-                    color: Color(0xFF1D4ED8),
+                    color: Color(0xFF1E40AF),
                     size: 28,
                   ),
                   title: Text(

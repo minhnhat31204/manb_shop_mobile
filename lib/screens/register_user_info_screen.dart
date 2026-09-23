@@ -121,7 +121,7 @@ class _RegisterUserInfoScreenState extends State<RegisterUserInfoScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1D4ED8),
+                    backgroundColor: const Color(0xFF1E40AF),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: _saveUserToDatabase,

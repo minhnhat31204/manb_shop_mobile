@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List products = [];
   List filteredProducts = [];
   List<String> bannerImages = [];
+  List techNewsList = [];
   bool isLoading = true;
 
   // --- CẤU HÌNH PHÂN TRANG ---
@@ -62,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.wait([
       _fetchPromotions(),
       _fetchProducts(),
+      _fetchTechNews(),
     ]);
   }
 
@@ -102,6 +104,116 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error fetching products: $e');
       if (mounted) setState(() => isLoading = false);
     }
+  }
+
+  // Hàm tải tin tức từ Web API
+  Future<void> _fetchTechNews() async {
+    try {
+      final res = await ApiService.getTechNews();
+      if (res.statusCode == 200 && mounted) {
+        final List data = jsonDecode(res.body);
+        setState(() {
+          techNewsList = data; // Số lượng bài viết tự động cập nhật theo Web API
+        });
+      }
+    } catch (e) {
+      print('Error fetching tech news: $e');
+    }
+  }
+
+  Widget _buildTechNewsSection() {
+    // 1. Dữ liệu tin tức mẫu làm Fallback (dùng khi API chưa có dữ liệu)
+    final List<Map<String, String>> defaultNewsList = [
+      {
+        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczNzQYl9kK2E14yR1nE4W7x5zN_lT68cQ3v5U_m0=w800-h500-no',
+        'title': 'GTA VI hé lộ thông tin mới nhất',
+      },
+      {
+        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczM3S9V4M_9M3E_7T1W8M4_y5=w800-h500-no',
+        'title': 'iPad Air M4 mới ra mắt',
+      },
+      {
+        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczO_L9V1K8M_9M3E_7T1W8M4=w800-h500-no',
+        'title': 'Gợi ý góc Setup làm việc đỉnh cao',
+      },
+    ];
+
+    // 2. Sử dụng dữ liệu API nếu có, ngược lại dùng dữ liệu mẫu
+    final displayList = techNewsList.isNotEmpty ? techNewsList : defaultNewsList;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Tiêu đề section
+        const Padding(
+          padding: EdgeInsets.only(left: 16.0, top: 16.0, bottom: 12.0),
+          child: Text(
+            'TIN CÔNG NGHỆ',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+
+        // Danh sách cuộn ngang
+        SizedBox(
+          height: 130,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            itemCount: displayList.length,
+            itemBuilder: (context, index) {
+              final item = displayList[index];
+              
+              final String imageUrl = (item['IMAGEURL'] ?? item['ImageUrl'] ?? item['imageUrl'] ?? '').toString();
+
+              return Container(
+                width: 230,
+                margin: const EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        // Xử lý khi nhấn vào tin tức
+                      },
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        errorBuilder: (_, _, _) => Container(
+                          color: Colors.grey[200],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 40,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   void _startAutoSlider() {
@@ -188,10 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1D4ED8),
+        backgroundColor: const Color(0xFF1E40AF),
         title: Image.asset(
           'lib/images/thuonghieu.png',
-          height: 28,
+          height: 32,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return const Text(
@@ -202,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12.0),
+            padding: const EdgeInsets.only(right: 16.0),
             child: HoverScaleIcon(
               onTap: () async {
                 final Uri zaloUri = Uri.parse('https://zalo.me/0909680426');
@@ -224,9 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: SizedBox(
-              height: 38,
+              height: 40,
               child: RawAutocomplete<Map<String, dynamic>>(
                 textEditingController: _searchController,
                 focusNode: _searchFocusNode,
@@ -253,13 +365,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Tìm sản phẩm...',
-                      hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+                      hintStyle: const TextStyle(fontSize: 16, color: Colors.black54),
                       fillColor: Colors.white,
                       filled: true,
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF1D4ED8), size: 20),
+                      prefixIcon: const Icon(Icons.search, color: Colors.black87, size: 28),
                       suffixIcon: controller.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                              icon: const Icon(Icons.clear, color: Colors.black87, size: 24),
                               onPressed: () {
                                 controller.clear();
                                 _performSearch('');
@@ -267,10 +379,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                           : null,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                     ),
                   );
                 },
@@ -279,13 +391,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.topLeft,
                     child: Material(
                       elevation: 6.0,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
                         constraints: const BoxConstraints(maxHeight: 280),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: ListView.separated(
                           padding: EdgeInsets.zero,
@@ -320,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               subtitle: Text(
                                 '${formatCurrency(discountPrice)} đ',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1E40AF)),
                               ),
                               onTap: () {
                                 onSelected(item);
@@ -345,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1D4ED8)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1E40AF)))
           : RefreshIndicator(
               onRefresh: _loadData,
               child: SingleChildScrollView(
@@ -355,129 +467,82 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Banner Auto Slider
                     if (bannerImages.isNotEmpty)
-                      SizedBox(
-                        height: 180,
-                        child: Stack(
-                          children: [
-                            PageView.builder(
-                              controller: _pageController,
-                              onPageChanged: (index) {
-                                setState(() {
-                                  _currentPage = index % bannerImages.length;
-                                });
-                              },
-                              itemBuilder: (context, index) {
-                                final imageIndex = index % bannerImages.length;
-                                return Image.network(
-                                  bannerImages[imageIndex],
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  errorBuilder: (_, _, _) => Container(
-                                    color: Colors.grey[300],
-                                    child: const Icon(
-                                      Icons.image_not_supported,
-                                      size: 50,
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SizedBox(
+                          height: 130,
+                          child: Stack(
+                            children: [
+                              PageView.builder(
+                                controller: _pageController,
+                                onPageChanged: (index) {
+                                  setState(() {
+                                    _currentPage = index % bannerImages.length;
+                                  });
+                                },
+                                itemBuilder: (context, index) {
+                                  final imageIndex = index % bannerImages.length;
+                                  return Image.network(
+                                    bannerImages[imageIndex],
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    errorBuilder: (_, _, _) => Container(
+                                      color: Colors.grey[300],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 50,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            Positioned(
-                              left: 10,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _previousBanner,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 4,
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.chevron_left,
-                                      color: Colors.black87,
-                                      size: 22,
+                                  );
+                                },
+                              ),
+                            
+                              Positioned(
+                                bottom: 10,
+                                left: 0,
+                                right: 0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    bannerImages.length,
+                                    (index) => AnimatedContainer(
+                                      duration: const Duration(milliseconds: 250),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                      ),
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: _currentPage == index
+                                            ? Colors.white
+                                            : Colors.grey.withValues(alpha: 0.8),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              right: 10,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: _nextBanner,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 4,
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.chevron_right,
-                                      color: Colors.black87,
-                                      size: 22,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              left: 0,
-                              right: 0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(
-                                  bannerImages.length,
-                                  (index) => AnimatedContainer(
-                                    duration: const Duration(milliseconds: 250),
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: _currentPage == index
-                                          ? const Color(0xFF1D4ED8)
-                                          : Colors.white.withValues(alpha: 0.8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
+                    ), 
+
+                    _buildTechNewsSection(), 
 
                     // Title
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Text(
                         _searchController.text.isEmpty
-                            ? '🔥 SẢN PHẨM NỔI BẬT'
+                            ? 'SẢN PHẨM NỔI BẬT'
                             : '🔍 KẾT QUẢ TÌM KIẾM (${filteredProducts.length})',
                         style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1D4ED8),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -590,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   gradient: const LinearGradient(
                                                     colors: [
                                                       Color(0xFF8B5CF6),
-                                                      Color(0xFF1D4ED8),
+                                                      Color(0xFF1E40AF),
                                                     ],
                                                   ),
                                                   borderRadius:
@@ -673,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     return IconButton(
                                                       icon: Icon(
                                                         isFav ? Icons.favorite : Icons.favorite_border,
-                                                        color: isFav ? Colors.red : const Color(0xFF1D4ED8),
+                                                        color: isFav ? Color(0xFF1E40AF) : const Color(0xFF1E40AF),
                                                       ),
                                                       onPressed: () {
                                                         if (userId == null) {
@@ -704,7 +769,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const SizedBox(height: 10),
                                             buildPriceText(
                                               discountPrice,
-                                              color: const Color(0xFF1D4ED8),
+                                              color: const Color(0xFF1E40AF),
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -786,7 +851,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 : null,
                             icon: const Icon(Icons.chevron_left),
-                            color: const Color(0xFF1D4ED8),
+                            color: const Color(0xFF1E40AF),
                             disabledColor: Colors.grey[300],
                           ),
                           
@@ -807,16 +872,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? const Color(0xFF1D4ED8) : Colors.white,
+                                    color: isSelected ? const Color(0xFF1E40AF) : Colors.white,
                                     borderRadius: BorderRadius.circular(6),
                                     border: Border.all(
-                                      color: isSelected ? const Color(0xFF1D4ED8) : Colors.grey[300]!,
+                                      color: isSelected ? const Color(0xFF1E40AF) : Colors.grey[300]!,
                                     ),
                                   ),
                                   child: Text(
                                     '$pageNumber',
                                     style: TextStyle(
-                                      color: isSelected ? Colors.white : const Color(0xFF1D4ED8),
+                                      color: isSelected ? Colors.white : const Color(0xFF1E40AF),
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                     ),
                                   ),
@@ -835,7 +900,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 : null,
                             icon: const Icon(Icons.chevron_right),
-                            color: const Color(0xFF1D4ED8),
+                            color: const Color(0xFF1E40AF),
                             disabledColor: Colors.grey[300],
                           ),
                         ],
@@ -849,7 +914,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 0.0, right: 0.0),
         child: FloatingActionButton(
-          backgroundColor: const Color(0xFF1D4ED8),
+          backgroundColor: const Color(0xFF1E40AF),
           heroTag: null,
           onPressed: () => _makePhoneCall('0909680426'),
           child: const Icon(Icons.call, color: Colors.white),
@@ -876,7 +941,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildPriceText(
     num price, {
-    Color color = const Color(0xFF1D4ED8),
+    Color color = const Color(0xFF1E40AF),
     double fontSize = 16,
     FontWeight fontWeight = FontWeight.bold,
   }) {

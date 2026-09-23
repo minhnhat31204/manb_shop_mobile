@@ -151,7 +151,7 @@ class _MainScreenState extends State<MainScreen> {
                   backgroundColor: Colors.white,
                   elevation: 0,
                   iconSize: 22.0,
-                  selectedItemColor: const Color(0xFF1D4ED8),
+                  selectedItemColor: const Color(0xFF1E40AF),
                   unselectedItemColor: const Color(0xFF71717A),
                   selectedFontSize: 10.5,
                   unselectedFontSize: 10.5,

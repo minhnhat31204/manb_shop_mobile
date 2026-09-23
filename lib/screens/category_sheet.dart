@@ -54,11 +54,11 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
               const SizedBox(width: 24),
               const Text(
                 'Danh mục sản phẩm',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               GestureDetector(
                 onTap: widget.onClose, // Gọi callback đóng
-                child: const Icon(Icons.close, color: Colors.grey),
+                child: const Icon(Icons.close, color: Colors.black87),
               ),
             ],
           ),
@@ -95,7 +95,7 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
                               decoration: BoxDecoration(
                                 color: isSelected ? const Color(0xFFE8F0FE) : Colors.white,
                                 borderRadius: BorderRadius.circular(8),
-                                border: isSelected ? Border.all(color: Colors.blue, width: 1.5) : null,
+                                border: isSelected ? Border.all(color: Color(0xFF1E40AF), width: 1.5) : null,
                               ),
                               child: imageUrl.isNotEmpty
                                   ? Image.network(
@@ -103,12 +103,12 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
                                       fit: BoxFit.contain,
                                       errorBuilder: (_, _, _) => Icon(
                                         category['icon'] ?? Icons.category,
-                                        color: Colors.blue.shade800,
+                                        color: Color(0xFF1E40AF),
                                       ),
                                     )
                                   : Icon(
                                       category['icon'] ?? Icons.category,
-                                      color: isSelected ? Colors.blue.shade800 : Colors.grey,
+                                      color: isSelected ? Color(0xFF1E40AF) : Colors.grey,
                                       size: 28,
                                     ),
                             ),
@@ -119,7 +119,7 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                color: isSelected ? Colors.blue.shade800 : Colors.black87,
+                                color: isSelected ? Color(0xFF1E40AF) : Colors.black87,
                               ),
                             ),
                           ],
@@ -132,7 +132,7 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
               const VerticalDivider(width: 1, color: Color(0xFFEEEEEE)),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,7 +141,7 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
                           currentCategory['name'].toUpperCase(),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
-                        const Icon(Icons.chevron_right, color: Colors.blue),
+                        const Icon(Icons.chevron_right, color: Color(0xFF1E40AF)),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -168,7 +168,7 @@ class _CategoryBottomSheetContentState extends State<CategoryBottomSheetContent>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 2.5,
+        childAspectRatio: 3.2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),

@@ -5,7 +5,7 @@ class TermsPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF1D4ED8);
+    const primaryColor = Color(0xFF1E40AF);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -116,7 +116,7 @@ class TermsPolicyScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: const Color(0xFF1D4ED8), size: 22),
+                Icon(icon, color: const Color(0xFF1E40AF), size: 22),
                 const SizedBox(width: 8),
                 Text(
                   title,

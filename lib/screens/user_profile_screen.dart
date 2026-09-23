@@ -31,7 +31,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   File? _selectedImageFile;
 
   // Màu sắc chủ đạo Xanh - Trắng
-  static const Color primaryBlue = Color(0xFF1D4ED8);
+  static const Color primaryBlue = Color(0xFF1E40AF);
   static const Color lightBg = Color(0xFFF8FAFC);
 
   @override

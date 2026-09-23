@@ -64,9 +64,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             title.toUpperCase(),
             style: const TextStyle(
               color: Color(0xFF334155),
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -78,12 +77,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   BoxDecoration _cardDecoration({Border? border}) {
     return BoxDecoration(
       color: cardColor,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(8),
       border: border ?? Border.all(color: const Color(0xFFE2E8F0), width: 1),
       boxShadow: [
         BoxShadow(
           color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-          blurRadius: 10,
+          blurRadius: 8,
           offset: const Offset(0, 4),
         ),
       ],
@@ -393,24 +392,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 children: [
                   SwitchListTile(
-                    activeThumbColor: primaryColor,
-                    title: const Text('Cài đặt phần mềm miễn phí', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                    trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                    // 1. Màu khi BẬT (ON)
+                    activeThumbColor: Colors.white, // Màu nút tròn khi bật
+                    activeTrackColor: Color(0xFF1E40AF), // Màu thanh nền khi bật
+                    // 2. Màu khi TẮT (OFF)
+                    inactiveThumbColor: Colors.white, // Màu nút tròn khi tắt
+                    inactiveTrackColor: Colors.grey[300], // Màu thanh nền khi tắt
+                    title: const Text('Cài đặt phần mềm miễn phí', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
                     subtitle: const Text('Hỗ trợ cài Win, Office cơ bản', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                     value: installFree,
                     onChanged: (v) => setState(() => installFree = v),
                   ),
                   Divider(height: 1, color: Colors.grey.shade200),
                   SwitchListTile(
-                    activeThumbColor: primaryColor,
-                    title: const Text('Hỗ trợ kỹ thuật (+55.000đ)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                    trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                    // 1. Màu khi BẬT (ON)
+                    activeThumbColor: Colors.white, // Màu nút tròn khi bật
+                    activeTrackColor: Color(0xFF1E40AF), // Màu thanh nền khi bật
+                    // 2. Màu khi TẮT (OFF)
+                    inactiveThumbColor: Colors.white, // Màu nút tròn khi tắt
+                    inactiveTrackColor: Colors.grey[300], // Màu thanh nền khi tắt
+                    title: const Text('Hỗ trợ kỹ thuật (+55.000đ)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
                     subtitle: const Text('Bảo hành tận nơi 12 tháng', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                     value: techSupport,
                     onChanged: (v) => setState(() => techSupport = v),
                   ),
                   Divider(height: 1, color: Colors.grey.shade200),
                   SwitchListTile(
-                    activeThumbColor: primaryColor,
-                    title: const Text('Xuất hóa đơn GTGT (VAT)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                    trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                    // 1. Màu khi BẬT (ON)
+                    activeThumbColor: Colors.white, // Màu nút tròn khi bật
+                    activeTrackColor: Color(0xFF1E40AF), // Màu thanh nền khi bật
+                    // 2. Màu khi TẮT (OFF)
+                    inactiveThumbColor: Colors.white, // Màu nút tròn khi tắt
+                    inactiveTrackColor: Colors.grey[300], // Màu thanh nền khi tắt
+                    title: const Text('Xuất hóa đơn GTGT (VAT)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
                     value: vatInvoice,
                     onChanged: (v) => setState(() => vatInvoice = v),
                   ),
@@ -430,7 +447,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Tổng tạm tính', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                      Text(formatCurrency(subtotal), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                      Text(formatCurrency(subtotal), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87)),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -438,7 +455,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Phí vận chuyển', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                      Text(formatCurrency(shippingFee), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                      Text(formatCurrency(shippingFee), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87)),
                     ],
                   ),
                   if (techSupport) ...[
@@ -447,7 +464,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Hỗ trợ kỹ thuật', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                        Text(formatCurrency(techSupportFee), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF0F172A))),
+                        Text(formatCurrency(techSupportFee), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87)),
                       ],
                     ),
                   ],
@@ -504,7 +521,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Tổng thanh toán', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                    const Text('Tổng thanh toán', style: TextStyle(fontSize: 14, color: Colors.black87)),
                     const SizedBox(height: 2),
                     Text(
                       formatCurrency(grandTotal),
@@ -524,8 +541,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     backgroundColor: primaryColor,
                     elevation: 2,
                     shadowColor: primaryColor.withValues(alpha: 0.3),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 42),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
                   onPressed: checkoutItems.isEmpty
                       ? null
@@ -554,7 +571,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         },
                   child: const Text(
                     'Thanh toán',
-                    style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),

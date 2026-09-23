@@ -229,7 +229,7 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                                   constraints: const BoxConstraints(),
                                   icon: const Icon(
                                     Icons.favorite,
-                                    color: Colors.red,
+                                    color: Color(0xFF1E40AF),
                                     size: 20,
                                   ),
                                   onPressed: () {
@@ -267,7 +267,7 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                                   TextSpan(
                                     text: '${_formatCurrency(discountPrice)} ',
                                     style: const TextStyle(
-                                      color: Color(0xFF1D4ED8),
+                                      color: Color(0xFF1E40AF),
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -275,7 +275,7 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                                   const TextSpan(
                                     text: 'đ',
                                     style: TextStyle(
-                                      color: Color(0xFF1D4ED8),
+                                      color: Color(0xFF1E40AF),
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       decoration: TextDecoration.underline,

@@ -50,7 +50,7 @@ class OrderDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1D4ED8), // Xanh chủ đạo
+        backgroundColor: const Color(0xFF1E40AF), // Xanh chủ đạo
         foregroundColor: Colors.white, // Icon back + tiêu đề màu trắng
         elevation: 0,
         title: Text(
@@ -64,7 +64,7 @@ class OrderDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. THÔNG TIN ĐƠN HÀNG
-            const Text('Thông tin đơn hàng', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8))),
+            const Text('Thông tin đơn hàng', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E40AF))),
             const SizedBox(height: 8),
             Card(
               color: Colors.white,
@@ -85,7 +85,7 @@ class OrderDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 2. THÔNG TIN GIAO HÀNG
-            const Text('Thông tin giao hàng', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8))),
+            const Text('Thông tin giao hàng', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E40AF))),
             const SizedBox(height: 8),
             Card(
               color: Colors.white,
@@ -106,7 +106,7 @@ class OrderDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 3. DANH SÁCH SẢN PHẨM
-            const Text('Sản phẩm đã mua', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8))),
+            const Text('Sản phẩm đã mua', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E40AF))),
             const SizedBox(height: 8),
             items.isEmpty
               ? const Text('Không có chi tiết sản phẩm.', style: TextStyle(color: Colors.grey))
@@ -174,7 +174,7 @@ class OrderDetailScreen extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.network(imageUrl, fit: BoxFit.cover),
                                       )
-                                    : const Icon(Icons.computer, size: 32, color: Color(0xFF1D4ED8)),
+                                    : const Icon(Icons.computer, size: 32, color: Color(0xFF1E40AF)),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -198,7 +198,7 @@ class OrderDetailScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     formatCurrency(currentPrice),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1D4ED8)),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E40AF)),
                                   ),
                                   if (originalPrice > currentPrice) ...[
                                     const SizedBox(height: 4),

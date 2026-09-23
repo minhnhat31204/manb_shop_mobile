@@ -9,7 +9,7 @@ class ShowroomScreen extends StatefulWidget {
 }
 
 class _ShowroomScreenState extends State<ShowroomScreen> {
-  static const primaryColor = Color(0xFF1D4ED8);
+  static const primaryColor = Color(0xFF1E40AF);
 
   final List<Map<String, String>> showrooms = const [
     {

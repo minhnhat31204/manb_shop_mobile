@@ -16,6 +16,11 @@ class ApiService {
       body: jsonEncode(userData),
     );
   }
+  // Lấy danh sách tin công nghệ từ API
+  static Future<http.Response> getTechNews() async {
+    final url = Uri.parse('$baseUrl/news'); 
+    return await http.get(url);
+  }
 
   // 2. Lấy thông tin user bằng số điện thoại (cho luồng đăng nhập OTP)
   static Future<Map<String, dynamic>?> getUserByPhone(String phone) async {

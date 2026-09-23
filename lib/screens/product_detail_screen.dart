@@ -386,7 +386,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             bottom: 130,
             child: FloatingActionButton(
               mini: true,
-              backgroundColor: const Color(0xFF1D4ED8),
+              backgroundColor: const Color(0xFF1E40AF),
               heroTag: null,
               onPressed: () => _makePhoneCall('0909680426'),
               child: const Icon(Icons.call, color: Colors.white),
@@ -413,13 +413,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               },
               child: const Row(
                 children: [
-                  Icon(Icons.home, size: 16, color: Color(0xFF1D4ED8)),
+                  Icon(Icons.home, size: 16, color: Color(0xFF1E40AF)),
                   SizedBox(width: 4),
                   Text(
                     'Trang chủ',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF1D4ED8),
+                      color: Color(0xFF1E40AF),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -442,7 +442,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 category,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF1D4ED8),
+                  color: Color(0xFF1E40AF),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -463,7 +463,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 '$category $brand',
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF1D4ED8),
+                  color: Color(0xFF1E40AF),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -522,7 +522,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               Text(
                 brand,
                 style: const TextStyle(
-                  color: Color(0xFF1D4ED8),
+                  color: Color(0xFF1E40AF),
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -551,7 +551,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   return IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Colors.red : const Color(0xFF1D4ED8),
+                      color: isFav ? Color(0xFF1E40AF) : const Color(0xFF1E40AF),
                     ),
                     onPressed: () {
                       if (userId == null) {
@@ -631,7 +631,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           Text(
             '${formatCurrency(discountPrice)} đ',
             style: const TextStyle(
-              color: Color(0xFF1D4ED8),
+              color: Color(0xFF1E40AF),
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -653,7 +653,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF1D4ED8),
+              color: const Color(0xFF1E40AF),
               borderRadius: BorderRadius.circular(4),
             ),
             child: const Row(
@@ -704,12 +704,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF1D4ED8)),
+              border: Border.all(color: const Color(0xFF1E40AF)),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Row(
               children: [
-                Icon(Icons.card_giftcard, color: Color(0xFF1D4ED8)),
+                Icon(Icons.card_giftcard, color: Color(0xFF1E40AF)),
                 SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -733,7 +733,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     ],
                   ),
                 ),
-                Icon(Icons.check_circle, color: Color(0xFF1D4ED8)),
+                Icon(Icons.check_circle, color: Color(0xFF1E40AF)),
               ],
             ),
           ),
@@ -806,7 +806,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               children: [
                 TextSpan(
                   text: 'Xem chi tiết',
-                  style: TextStyle(color: Color(0xFF1D4ED8)),
+                  style: TextStyle(color: Color(0xFF1E40AF)),
                 ),
               ],
             ),
@@ -881,7 +881,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     final String warranty =
         widget.product['Warranty'] ?? widget.product['WARRANTY'] ?? '12 tháng';
     final String series =
-        widget.product['Series'] ?? widget.product['SERIES'] ?? '$brand';
+        widget.product['Series'] ?? widget.product['SERIES'] ?? brand;
     final String partNumber =
         widget.product['PartNumber'] ??
         widget.product['PARTNUMBER'] ??
@@ -916,7 +916,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             controller: _tabController,
             labelColor: Colors.black87,
             unselectedLabelColor: Colors.grey,
-            indicatorColor: const Color(0xFF1D4ED8),
+            indicatorColor: const Color(0xFF1E40AF),
             indicatorWeight: 2.5,
             labelStyle: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -1186,7 +1186,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                               const Icon(
                                 Icons.favorite_border,
                                 size: 18,
-                                color: Color(0xFF1D4ED8),
+                                color: Color(0xFF1E40AF),
                               ),
                             ],
                           ),
@@ -1219,14 +1219,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: const Color(0xFF1D4ED8),
+                                color: const Color(0xFF1E40AF),
                               ),
                               borderRadius: BorderRadius.circular(3),
                             ),
                             child: const Text(
                               'COMBO GIẢM ~ 50.000 đ',
                               style: TextStyle(
-                                color: Color(0xFF1D4ED8),
+                                color: Color(0xFF1E40AF),
                                 fontSize: 8,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -1238,7 +1238,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                           child: Text(
                             '${formatCurrency(discPrice)} đ',
                             style: const TextStyle(
-                              color: Color(0xFF1D4ED8),
+                              color: Color(0xFF1E40AF),
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -1350,13 +1350,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF1D4ED8), size: 18),
+          Icon(icon, color: const Color(0xFF1E40AF), size: 18),
           const SizedBox(width: 8),
           Expanded(child: Text(text, style: const TextStyle(fontSize: 12))),
           if (detailText != null)
             Text(
               detailText,
-              style: const TextStyle(color: Color(0xFF1D4ED8), fontSize: 12),
+              style: const TextStyle(color: Color(0xFF1E40AF), fontSize: 12),
             ),
         ],
       ),
@@ -1488,7 +1488,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 children: [
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF1D4ED8)),
+                      side: const BorderSide(color: Color(0xFF1E40AF)),
                       padding: const EdgeInsets.all(12),
                     ),
                     onPressed: () async {
@@ -1515,14 +1515,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     },
                     child: const Icon(
                       Icons.add_shopping_cart,
-                      color: Color(0xFF1D4ED8),
+                      color: Color(0xFF1E40AF),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1D4ED8),
+                        backgroundColor: const Color(0xFF1E40AF),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
@@ -1619,7 +1619,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 },
                 child: const Text(
                   'Xem thông tin chi tiết',
-                  style: TextStyle(color: Color(0xFF1D4ED8), fontSize: 12),
+                  style: TextStyle(color: Color(0xFF1E40AF), fontSize: 12),
                 ),
               ),
             ],
@@ -1665,7 +1665,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1D4ED8),
+              color: Color(0xFF1E40AF),
             ),
           ),
           const SizedBox(height: 12),
@@ -1685,7 +1685,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1D4ED8),
+                    color: Color(0xFF1E40AF),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -1721,10 +1721,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
+                border: Border.all(color: const Color(0xFF1E40AF), width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF1D4ED8).withValues(alpha: 0.08),
+                    color: const Color(0xFF1E40AF).withValues(alpha: 0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -1780,7 +1780,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF1D4ED8)),
+                        borderSide: const BorderSide(color: Color(0xFF1E40AF)),
                       ),
                     ),
                   ),
@@ -1789,7 +1789,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1D4ED8),
+                        backgroundColor: const Color(0xFF1E40AF),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
@@ -1829,7 +1829,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Center(
-                    child: CircularProgressIndicator(color: Color(0xFF1D4ED8)),
+                    child: CircularProgressIndicator(color: Color(0xFF1E40AF)),
                   ),
                 );
               }
@@ -1931,7 +1931,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     ? Text(
                         name.isNotEmpty ? name[0].toUpperCase() : 'U',
                         style: const TextStyle(
-                          color: Color(0xFF1D4ED8),
+                          color: Color(0xFF1E40AF),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),

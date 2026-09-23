@@ -97,7 +97,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF1D4ED8);
+    const primaryColor = Color(0xFF1E40AF);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -105,7 +105,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F2937), size: 20),
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1F2937), size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),

@@ -52,14 +52,13 @@ class _AccountScreenState extends State<AccountScreen> {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 20,
+        top: MediaQuery.of(context).padding.top + 60,
         bottom: 24,
         left: 20,
         right: 20,
       ),
       decoration: const BoxDecoration(
-        color: Color(0xFF1D4ED8),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        color: Color(0xFF1E40AF),
       ),
       child: isLoggedIn
           ? InkWell(
@@ -100,13 +99,9 @@ class _AccountScreenState extends State<AccountScreen> {
                           children: [
                             Text(
                               'Thông tin cá nhân',
-                              style: TextStyle(color: Colors.white70, fontSize: 13),
+                              style: TextStyle(color: Colors.white70, fontSize: 14,fontWeight: FontWeight.w700),
                             ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: Colors.white70,
-                              size: 16,
-                            ),
+                            Icon(Icons.chevron_right, color: Colors.white70, size: 16,),
                           ],
                         ),
                       ],
@@ -119,10 +114,10 @@ class _AccountScreenState extends State<AccountScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF1D4ED8),
+                  foregroundColor: const Color(0xFF1E40AF),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 12,
+                    horizontal: 48,
+                    vertical: 8,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -138,7 +133,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 },
                 child: const Text(
                   'Đăng ký / Đăng nhập',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
@@ -301,7 +296,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 Text(
                   subtitle,
                   style: const TextStyle(
-                    color: Color(0xFF1D4ED8),
+                    color: Color(0xFF1E40AF),
                     fontWeight: FontWeight.bold,
                   ),
                 ),

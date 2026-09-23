@@ -127,7 +127,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1D4ED8),
+        backgroundColor: const Color(0xFF1E40AF),
         elevation: 0,
         centerTitle: true,
         title: const Text(
@@ -156,7 +156,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             )
           : _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF1D4ED8)),
+              child: CircularProgressIndicator(color: Color(0xFF1E40AF)),
             )
           : _notifications.isEmpty
           ? Center(
@@ -235,7 +235,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             width: 8,
                                             height: 8,
                                             decoration: const BoxDecoration(
-                                              color: Color(0xFF1D4ED8),
+                                              color: Color(0xFF1E40AF),
                                               shape: BoxShape.circle,
                                             ),
                                           ),

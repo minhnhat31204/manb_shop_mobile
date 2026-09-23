@@ -274,7 +274,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             min: 0,
                             max: 500000000,
                             divisions: 100,
-                            activeColor: const Color(0xFF1D4ED8),
+                            activeColor: const Color(0xFF1E40AF),
                             onChanged: (values) {
                               setModalState(() => _priceRange = values);
                             },
@@ -373,12 +373,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             });
                           },
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFF1D4ED8)),
+                            side: const BorderSide(color: Color(0xFF1E40AF)),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                           child: const Text(
                             'Xóa bộ lọc',
-                            style: TextStyle(color: Color(0xFF1D4ED8)),
+                            style: TextStyle(color: Color(0xFF1E40AF)),
                           ),
                         ),
                       ),
@@ -422,7 +422,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           color: isSelected ? const Color(0xFFEFF6FF) : Colors.white,
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF1D4ED8)
+                ? const Color(0xFF1E40AF)
                 : const Color(0xFFE5E7EB),
           ),
           borderRadius: BorderRadius.circular(6),
@@ -431,7 +431,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF1D4ED8) : Colors.black87,
+              color: isSelected ? const Color(0xFF1E40AF) : Colors.black87,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 13,
             ),
@@ -462,7 +462,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           onPressed: widget.onGoToHome ?? () => Navigator.pop(context),
         ),
         title: SizedBox(
-          height: 38,
+          height: 42,
           child: RawAutocomplete<Map<String, dynamic>>(
             textEditingController: _searchController,
             focusNode: _searchFocusNode,
@@ -493,7 +493,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     decoration: InputDecoration(
                       hintText: 'Bạn muốn mua gì hôm nay...',
                       hintStyle: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: Colors.grey,
                       ),
                       fillColor: const Color(0xFFF3F4F6),
@@ -501,8 +501,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       prefixIcon: IconButton(
                         icon: const Icon(
                           Icons.search,
-                          color: Color(0xFF1D4ED8),
-                          size: 20,
+                          color: Colors.black,
+                          size: 24,
                         ),
                         onPressed: () {
                           _applyFilters();
@@ -513,8 +513,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ? IconButton(
                               icon: const Icon(
                                 Icons.clear,
-                                color: Colors.grey,
-                                size: 18,
+                                color: Colors.black87,
+                                size: 24,
                               ),
                               onPressed: () {
                                 controller.clear();
@@ -523,7 +523,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             )
                           : null,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -607,7 +607,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1D4ED8),
+                                  color: Color(0xFF1E40AF),
                                 ),
                               ),
                               if (price > discountPrice)
@@ -709,13 +709,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 Icon(
                                   Icons.home_outlined,
                                   size: 16,
-                                  color: Color(0xFF1D4ED8),
+                                  color: Color(0xFF1E40AF),
                                 ),
                                 SizedBox(width: 4),
                                 Text(
                                   'Trang chủ',
                                   style: TextStyle(
-                                    color: Color(0xFF1D4ED8),
+                                    color: Color(0xFF1E40AF),
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -739,7 +739,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             child: Text(
                               'Laptop',
                               style: TextStyle(
-                                color: const Color(0xFF1D4ED8),
+                                color: const Color(0xFF1E40AF),
                                 fontSize: 12,
                                 fontWeight: _currentSelectedBrand == null
                                     ? FontWeight.bold
@@ -767,7 +767,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               child: Text(
                                 'Laptop $initialBrand',
                                 style: TextStyle(
-                                  color: const Color(0xFF1D4ED8),
+                                  color: const Color(0xFF1E40AF),
                                   fontSize: 12,
                                   fontWeight:
                                       _currentSelectedBrand == initialBrand
@@ -809,7 +809,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   // 3. Banner Khuyến Mãi Ngang
                   Container(
                     width: double.infinity,
-                    color: const Color(0xFF1D4ED8),
+                    color: const Color(0xFF1E40AF),
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                       horizontal: 12,
@@ -879,7 +879,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               Icon(
                                 Icons.filter_alt_outlined,
                                 size: 18,
-                                color: Color(0xFF1D4ED8),
+                                color: Color(0xFF1E40AF),
                               ),
                             ],
                           ),
@@ -925,7 +925,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 0.0, right: 0.0), // 👈 Tăng số này (ví dụ 20, 30, 40) để đẩy nút THẤP XUỐNG
         child: FloatingActionButton(
-          backgroundColor: const Color(0xFF1D4ED8),
+          backgroundColor: const Color(0xFF1E40AF),
           heroTag: null,
           onPressed: () => _makePhoneCall('0909680426'),
           child: const Icon(Icons.call, color: Colors.white),
@@ -1113,7 +1113,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             constraints: const BoxConstraints(),
                             icon: Icon(
                               isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : const Color(0xFF1D4ED8),
+                              color: isFav ? Color(0xFF1E40AF) : const Color(0xFF1E40AF),
                               size: 20,
                             ),
                             onPressed: () {
@@ -1153,7 +1153,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         TextSpan(
                           text: '${_formatCurrency(discountPrice)} ',
                           style: const TextStyle(
-                            color: Color(0xFF1D4ED8),
+                            color: Color(0xFF1E40AF),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1161,7 +1161,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         const TextSpan(
                           text: 'đ',
                           style: TextStyle(
-                            color: Color(0xFF1D4ED8),
+                            color: Color(0xFF1E40AF),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,

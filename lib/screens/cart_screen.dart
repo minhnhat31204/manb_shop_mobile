@@ -16,7 +16,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   // Màu chủ đạo đồng bộ toàn bộ ứng dụng
-  static const Color primaryColor = Color(0xFF1D4ED8);
+  static const Color primaryColor = Color(0xFF1E40AF);
 
   String formatCurrency(dynamic price) {
     if (price == null) return '0 đ';
@@ -234,7 +234,7 @@ class _CartScreenState extends State<CartScreen> {
                                               child: Icon(
                                                 Icons.delete_outline,
                                                 color: Colors.redAccent,
-                                                size: 20,
+                                                size: 24,
                                               ),
                                             ),
                                           ),
@@ -405,7 +405,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: const Icon(
               Icons.shopping_cart_outlined,
-              size: 72,
+              size: 80,
               color: primaryColor,
             ),
           ),
@@ -414,7 +414,7 @@ class _CartScreenState extends State<CartScreen> {
             'Giỏ hàng của bạn đang trống',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
           ),
@@ -430,7 +430,7 @@ class _CartScreenState extends State<CartScreen> {
               backgroundColor: primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(8),
               ),
               elevation: 0,
             ),
@@ -532,7 +532,7 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     const Text(
                       'Tổng thanh toán',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: Colors.black87, fontSize: 14),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -549,11 +549,11 @@ class _CartScreenState extends State<CartScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 36,
-                      vertical: 14,
+                      horizontal: 48,
+                      vertical: 8,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     elevation: 0,
                   ),

@@ -67,7 +67,7 @@ class LoginOptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF1D4ED8); // Màu xanh dương thương hiệu
+    const primaryColor = Color(0xFF1E40AF); // Màu xanh dương thương hiệu
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,7 +76,7 @@ class LoginOptionsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_back_ios,
             color: Color(0xFF1F2937),
             size: 20,
           ),
@@ -154,7 +154,7 @@ class LoginOptionsScreen extends StatelessWidget {
                         height: 22,
                         width: 22,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Text(
+                        errorBuilder: (_, _, _) => const Text(
                           'G',
                           style: TextStyle(
                             fontSize: 22,

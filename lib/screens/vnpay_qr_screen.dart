@@ -230,7 +230,7 @@ class _VNPAYQRScreenState extends State<VNPAYQRScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
           onPressed: _showCancelDialog,
         ),
       ),

@@ -51,7 +51,7 @@ class _PromotionScreenState extends State<PromotionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mã khuyến mãi', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF1D4ED8),
+        backgroundColor: const Color(0xFF1E40AF),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
@@ -76,7 +76,7 @@ class _PromotionScreenState extends State<PromotionScreen> {
                     title: Text(voucher['Name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text('Giảm ${voucher['DiscountPercentage']}%\nHSD: ${formatDate(voucher['ExpiryDate'])}'),
                     trailing: Checkbox(
-                      activeColor: const Color(0xFF1D4ED8), // Màu tích xanh
+                      activeColor: const Color(0xFF1E40AF), // Màu tích xanh
                       value: isSelected,
                       onChanged: (bool? value) {
                         cartProvider.toggleVoucher(voucher);
