@@ -65,7 +65,8 @@ class OrderHistoryScreen extends StatelessWidget {
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => const Icon(Icons.computer, color: Colors.grey),
+                  errorBuilder: (_, _, _) =>
+                      const Icon(Icons.computer, color: Colors.grey),
                 ),
               )
             : const Icon(Icons.computer, color: Colors.grey),
@@ -101,7 +102,11 @@ class OrderHistoryScreen extends StatelessWidget {
                       child: Image.network(
                         img2,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => const Icon(Icons.computer, size: 20, color: Colors.grey),
+                        errorBuilder: (_, _, _) => const Icon(
+                          Icons.computer,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
                       ),
                     )
                   : const Icon(Icons.computer, size: 20, color: Colors.grey),
@@ -124,7 +129,7 @@ class OrderHistoryScreen extends StatelessWidget {
                     color: Colors.black12,
                     blurRadius: 4,
                     offset: Offset(-2, 2),
-                  )
+                  ),
                 ],
               ),
               child: img1 != null && img1.isNotEmpty
@@ -133,7 +138,11 @@ class OrderHistoryScreen extends StatelessWidget {
                       child: Image.network(
                         img1,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => const Icon(Icons.computer, size: 24, color: Colors.grey),
+                        errorBuilder: (_, _, _) => const Icon(
+                          Icons.computer,
+                          size: 24,
+                          color: Colors.grey,
+                        ),
                       ),
                     )
                   : const Icon(Icons.computer, size: 24, color: Colors.grey),
@@ -144,9 +153,38 @@ class OrderHistoryScreen extends StatelessWidget {
     );
   }
 
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Chờ xác nhận':
+        return Colors.orange.shade700;
+      case 'Đang giao':
+        return const Color(0xFF1E40AF);
+      case 'Đã giao':
+        return const Color(0xFF16A34A);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getStatusBgColor(String status) {
+    switch (status) {
+      case 'Chờ xác nhận':
+        return Colors.orange.shade50;
+      case 'Đang giao':
+        return Colors.blue.shade50;
+      case 'Đã giao':
+        return Colors.green.shade50;
+      default:
+        return Colors.grey.shade50;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userId = Provider.of<UserProvider>(context, listen: false).currentUserId;
+    final userId = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    ).currentUserId;
 
     return DefaultTabController(
       length: 3,
@@ -156,7 +194,10 @@ class OrderHistoryScreen extends StatelessWidget {
           backgroundColor: const Color(0xFF1E40AF),
           foregroundColor: Colors.white,
           elevation: 0,
-          title: const Text('Quản lý đơn hàng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          title: const Text(
+            'Quản lý đơn hàng',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           bottom: const TabBar(
             indicatorColor: Colors.white,
             indicatorWeight: 3,
@@ -176,7 +217,11 @@ class OrderHistoryScreen extends StatelessWidget {
                 future: ApiService.getOrdersByUserId(userId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: Color(0xFF1E40AF)));
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF1E40AF),
+                      ),
+                    );
                   }
                   final orders = snapshot.data ?? [];
                   return TabBarView(
@@ -194,21 +239,31 @@ class OrderHistoryScreen extends StatelessWidget {
 
   Widget _buildOrderList(List<dynamic> orders, String targetStatus) {
     final filtered = orders.where((o) {
-      final rawStatus = (o['STATUS'] ?? o['Status'] ?? o['status'] ?? '').toString().trim().toLowerCase();
-      
+      final rawStatus = (o['STATUS'] ?? o['Status'] ?? o['status'] ?? '')
+          .toString()
+          .trim()
+          .toLowerCase();
+
       if (targetStatus == 'Chờ xác nhận') {
         return rawStatus == 'pending' || rawStatus == 'chờ xác nhận';
       } else if (targetStatus == 'Đang giao') {
-        return rawStatus == 'shipping' || rawStatus == 'delivering' || rawStatus == 'đang giao';
+        return rawStatus == 'shipping' ||
+            rawStatus == 'delivering' ||
+            rawStatus == 'đang giao';
       } else if (targetStatus == 'Đã giao') {
-        return rawStatus == 'completed' || rawStatus == 'delivered' || rawStatus == 'đã giao';
+        return rawStatus == 'completed' ||
+            rawStatus == 'delivered' ||
+            rawStatus == 'đã giao';
       }
       return false;
     }).toList();
 
     if (filtered.isEmpty) {
       return const Center(
-        child: Text('Không có đơn hàng nào', style: TextStyle(color: Colors.grey, fontSize: 15)),
+        child: Text(
+          'Không có đơn hàng nào',
+          style: TextStyle(color: Colors.grey, fontSize: 15),
+        ),
       );
     }
 
@@ -217,25 +272,35 @@ class OrderHistoryScreen extends StatelessWidget {
       itemCount: filtered.length,
       itemBuilder: (context, index) {
         final order = filtered[index];
-        
+
         // BỔ SUNG THÊM KEY order['Items']
-        final List items = order['Items'] ?? order['ITEMS'] ?? order['items'] ?? order['OrderItems'] ?? [];
-        
+        final List items =
+            order['Items'] ??
+            order['ITEMS'] ??
+            order['items'] ??
+            order['OrderItems'] ??
+            [];
+
         // Lấy tên sản phẩm đại diện
-        String firstProductName = 'Đơn hàng #${order['ORDERID'] ?? order['OrderID'] ?? order['ID']}';
+        String firstProductName =
+            'Đơn hàng #${order['ORDERID'] ?? order['OrderID'] ?? order['ID']}';
         if (items.isNotEmpty) {
-          final firstProduct = items[0]['Product'] ?? items[0]['product'] ?? items[0];
-          firstProductName = firstProduct['ProductName'] ?? 
-                             firstProduct['PRODUCTNAME'] ?? 
-                             firstProduct['Name'] ?? 
-                             items[0]['ProductName'] ?? 
-                             firstProductName;
+          final firstProduct =
+              items[0]['Product'] ?? items[0]['product'] ?? items[0];
+          firstProductName =
+              firstProduct['ProductName'] ??
+              firstProduct['PRODUCTNAME'] ??
+              firstProduct['Name'] ??
+              items[0]['ProductName'] ??
+              firstProductName;
         }
 
         return Card(
           color: Colors.white,
           elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(
             borderRadius: BorderRadius.circular(10),
@@ -248,7 +313,7 @@ class OrderHistoryScreen extends StatelessWidget {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -257,18 +322,31 @@ class OrderHistoryScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Mã đơn: ${order['ORDERID'] ?? order['OrderID'] ?? order['ID']}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.shade50,
+                          color: _getStatusBgColor(targetStatus),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Colors.orange.shade300),
+                          border: Border.all(
+                            color: _getStatusColor(targetStatus),
+                          ),
                         ),
                         child: Text(
                           targetStatus.toUpperCase(),
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange.shade800),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: _getStatusColor(targetStatus),
+                          ),
                         ),
                       ),
                     ],
@@ -287,12 +365,24 @@ class OrderHistoryScreen extends StatelessWidget {
                               firstProductName,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black87),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black87,
+                              ),
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              formatCurrency(order['TOTALAMOUNT'] ?? order['TotalAmount'] ?? order['totalAmount']),
-                              style: const TextStyle(color: Color(0xFFD97706), fontWeight: FontWeight.bold, fontSize: 14),
+                              formatCurrency(
+                                order['TOTALAMOUNT'] ??
+                                    order['TotalAmount'] ??
+                                    order['totalAmount'],
+                              ),
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
