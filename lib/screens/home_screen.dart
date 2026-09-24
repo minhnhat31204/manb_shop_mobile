@@ -122,23 +122,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTechNewsSection() {
-    // 1. Dữ liệu tin tức mẫu làm Fallback (dùng khi API chưa có dữ liệu)
+    // 1. Dữ liệu tin tức mẫu dùng Asset local kèm tiêu đề chuẩn
     final List<Map<String, String>> defaultNewsList = [
       {
-        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczNzQYl9kK2E14yR1nE4W7x5zN_lT68cQ3v5U_m0=w800-h500-no',
-        'title': 'GTA VI hé lộ thông tin mới nhất',
+        'imageUrl': 'lib/images/tincongnghe01.jpg',
+        'title': 'Thay mainboard có cần cài lại Win không? Cần làm gì khi thay mainboard?',
       },
       {
-        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczM3S9V4M_9M3E_7T1W8M4_y5=w800-h500-no',
-        'title': 'iPad Air M4 mới ra mắt',
+        'imageUrl': 'lib/images/tincongnghe02.jpg',
+        'title': 'Tổng hợp thông tin mới nhất về Grand Theft Auto 6',
       },
       {
-        'imageUrl': 'https://lh3.googleusercontent.com/pw/AP1GczO_L9V1K8M_9M3E_7T1W8M4=w800-h500-no',
-        'title': 'Gợi ý góc Setup làm việc đỉnh cao',
+        'imageUrl': 'lib/images/tincongnghe03.jpg',
+        'title': 'Tai Ương Final Chapter: Phân tích cốt truyện, kết thúc game',
       },
     ];
 
-    // 2. Sử dụng dữ liệu API nếu có, ngược lại dùng dữ liệu mẫu
+    // 2. Sử dụng dữ liệu API nếu có, ngược lại dùng danh sách mẫu
     final displayList = techNewsList.isNotEmpty ? techNewsList : defaultNewsList;
 
     return Column(
@@ -160,20 +160,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Danh sách cuộn ngang
         SizedBox(
-          height: 130,
+          height: 190, // Tăng chiều cao để chứa cả ảnh và dòng tiêu đề bên dưới
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             itemCount: displayList.length,
             itemBuilder: (context, index) {
               final item = displayList[index];
-              
-              final String imageUrl = (item['IMAGEURL'] ?? item['ImageUrl'] ?? item['imageUrl'] ?? '').toString();
+
+              final String imageUrl =
+                  (item['IMAGEURL'] ?? item['ImageUrl'] ?? item['imageUrl'] ?? '').toString();
+              final String title =
+                  (item['TITLE'] ?? item['Title'] ?? item['title'] ?? '').toString();
 
               return Container(
                 width: 230,
                 margin: const EdgeInsets.only(right: 16),
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -183,28 +187,69 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        // Xử lý khi nhấn vào tin tức
-                      },
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorBuilder: (_, _, _) => Container(
-                          color: Colors.grey[200],
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            size: 40,
-                            color: Colors.grey,
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () {
+                      // Xử lý khi nhấn vào tin tức
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // phần Hình ảnh (Phía trên)
+                        SizedBox(
+                          height: 125,
+                          width: double.infinity,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: imageUrl.startsWith('http')
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) => Container(
+                                      color: Colors.grey[200],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 40,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) => Container(
+                                      color: Colors.grey[200],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 40,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
-                      ),
+
+                        // Phần Tiêu đề chữ (Phía dưới)
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
