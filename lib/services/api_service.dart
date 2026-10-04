@@ -3,12 +3,31 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class ApiService {
-  //IP máy tính chạy server Node.js của bạn
+  // IP máy tính chạy server Node.js của bạn
   static const String baseUrl = 'http://192.168.154.1:5000/api';
 
-  // 1. Lưu người dùng mới vào Database
+  // 1. Đăng nhập
+  static Future<http.Response> login(Map<String, dynamic> credentials) async {
+    final url = Uri.parse('$baseUrl/auth/login');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(credentials),
+    );
+  }
+
+  // 2. Gửi OTP Đăng ký (MỚI BỔ SUNG)
+  static Future<http.Response> sendRegistrationOtp(String phone) async {
+    final url = Uri.parse('$baseUrl/auth/register/send-otp');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'phone': phone}),
+    );
+  }
+
+  // 3. Lưu người dùng mới vào Database (Đăng ký)
   static Future<http.Response> registerUser(Map<String, dynamic> userData) async {
-    // Đổi /register thành /auth/register cho đúng với route Backend
     final url = Uri.parse('$baseUrl/auth/register'); 
     return await http.post(
       url,
@@ -16,16 +35,46 @@ class ApiService {
       body: jsonEncode(userData),
     );
   }
+
+  // 4. Gửi mã OTP khôi phục mật khẩu (SỬA LẠI ĐÚNG ROUTE BACKEND)
+  static Future<http.Response> sendPasswordResetOtp(String email) async {
+    final url = Uri.parse('$baseUrl/auth/forgot-password/send-otp');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'channel': 'email', 'email': email}),
+    );
+  }
+
+  // 5. Xác thực mã OTP khôi phục mật khẩu (SỬA LẠI ĐÚNG ROUTE BACKEND)
+  static Future<http.Response> verifyPasswordResetOtp(String email, String otp) async {
+    final url = Uri.parse('$baseUrl/auth/forgot-password/verify-otp');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'channel': 'email', 'email': email, 'otp': otp}),
+    );
+  }
+
+  // 6. Đặt lại mật khẩu mới (SỬA LẠI ĐÚNG ROUTE BACKEND)
+  static Future<http.Response> resetPassword(String email, String newPassword) async {
+    final url = Uri.parse('$baseUrl/auth/forgot-password/reset');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'channel': 'email', 'email': email, 'newPassword': newPassword}),
+    );
+  }
+
   // Lấy danh sách tin công nghệ từ API
   static Future<http.Response> getTechNews() async {
     final url = Uri.parse('$baseUrl/news'); 
     return await http.get(url);
   }
 
-  // 2. Lấy thông tin user bằng số điện thoại (cho luồng đăng nhập OTP)
+  // Lấy thông tin user bằng số điện thoại
   static Future<Map<String, dynamic>?> getUserByPhone(String phone) async {
     try {
-      // Thay đổi URL API cho đúng với Backend của bạn
       final url = Uri.parse('$baseUrl/users/by-phone/$phone'); 
       final response = await http.get(url);
 
@@ -33,14 +82,13 @@ class ApiService {
         return jsonDecode(response.body);
       }
     } catch (e) {
-      print('Lỗi gọi API getUserByPhone: $e');
+      debugPrint('Lỗi gọi API getUserByPhone: $e');
     }
     return null;
   }
 
   static Future<http.Response> checkUserByPhone(String phone) async {
-    final url = Uri.parse('$baseUrl/users/check-phone'); // Điều chỉnh endpoint cho đúng với route backend của bạn
-    
+    final url = Uri.parse('$baseUrl/users/check-phone');
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -76,12 +124,10 @@ class ApiService {
     return http.get(Uri.parse('$baseUrl/products'));
   }
 
-  // Lấy danh sách Categories
   static Future<http.Response> getCategories() {
     return http.get(Uri.parse('$baseUrl/categories'));
   }
 
-  // 1. Tạo đơn hàng
   static Future<http.Response> createOrder(Map<String, dynamic> orderData) async {
     final response = await http.post(
       Uri.parse('$baseUrl/orders'),
@@ -91,7 +137,6 @@ class ApiService {
     return response;
   }
 
-  // 2. Lấy danh sách đơn hàng theo UserId
   static Future<List<dynamic>> getOrdersByUserId(int userId) async {
     final response = await http.get(Uri.parse('$baseUrl/orders/user/$userId'));
     if (response.statusCode == 200) {
@@ -100,7 +145,6 @@ class ApiService {
     return [];
   }
 
-  // 3. Lấy danh sách sản phẩm yêu thích
   static Future<List<dynamic>> getFavorites(int userId) async {
     final response = await http.get(Uri.parse('$baseUrl/favorites/$userId'));
     if (response.statusCode == 200) {
@@ -119,7 +163,7 @@ class ApiService {
       }),
     );
     return response.statusCode == 200 || response.statusCode == 201;
-}
+  }
 
   static Future<bool> removeFavorite(dynamic userId, dynamic productId) async {
     final response = await http.delete(
@@ -137,23 +181,21 @@ class ApiService {
     );
   }
 
-  // Kiểm tra quyền được đánh giá sản phẩm
-static Future<bool> checkCanReview(int orderId, int productId, int userId) async {
-  try {
-    final response = await http.get(
-      Uri.parse('$baseUrl/reviews/check-eligibility?orderId=$orderId&productId=$productId&userId=$userId'),
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['canReview'] ?? false;
+  static Future<bool> checkCanReview(int orderId, int productId, int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/reviews/check-eligibility?orderId=$orderId&productId=$productId&userId=$userId'),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['canReview'] ?? false;
+      }
+    } catch (e) {
+      debugPrint("Lỗi check review: $e");
     }
-  } catch (e) {
-    debugPrint("Lỗi check review: $e");
+    return false;
   }
-  return false;
-}
 
-  // Lấy danh sách bình luận của sản phẩm
   static Future<List<dynamic>> getProductReviews(int productId) async {
     try {
       final res = await http.get(Uri.parse('$baseUrl/reviews/product/$productId'));
@@ -166,7 +208,6 @@ static Future<bool> checkCanReview(int orderId, int productId, int userId) async
     return [];
   }
 
-  // Gửi đánh giá mới
   static Future<bool> postReview(Map<String, dynamic> body) async {
     try {
       final res = await http.post(
@@ -181,7 +222,6 @@ static Future<bool> checkCanReview(int orderId, int productId, int userId) async
     return false;
   }
 
-  // 1. Sửa URL lấy bình luận theo đúng route của Server (/reviews/product/:productId)
   static Future<List<dynamic>> getReviewsByProductId(dynamic productId) async {
     try {
       final response = await http.get(
@@ -196,7 +236,6 @@ static Future<bool> checkCanReview(int orderId, int productId, int userId) async
     return [];
   }
 
-  // 2. Sửa Key của JSON payload gửi lên cho khớp với Server (Viết hoa chữ cái đầu)
   static Future<bool> submitReview({
     required int orderId,
     required int productId,
@@ -241,7 +280,7 @@ static Future<bool> checkCanReview(int orderId, int productId, int userId) async
   }
 
   static Future<http.Response> getPromotions() async {
-    final url = Uri.parse('$baseUrl/promotions'); // Đường dẫn API promotions của bạn
+    final url = Uri.parse('$baseUrl/promotions');
     return await http.get(url);
   }
 }

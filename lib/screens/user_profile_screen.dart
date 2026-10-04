@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -5,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../services/api_service.dart';
-import '../providers/notification_provider.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -20,17 +20,24 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   bool _isEditing = false;
   bool _isLoading = false;
 
+  // Controller ẩn/hiện mật khẩu
+  bool _obscureOldPassword = true;
+  bool _obscureNewPassword = true;
+
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
   late TextEditingController _birthdayController;
 
+  // Controllers cho mật khẩu
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+
   String _gender = 'Nam';
   String _avatarUrl = '';
   File? _selectedImageFile;
 
-  // Màu sắc chủ đạo Xanh - Trắng
   static const Color primaryBlue = Color(0xFF1E40AF);
   static const Color lightBg = Color(0xFFF8FAFC);
 
@@ -64,6 +71,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     _phoneController.dispose();
     _addressController.dispose();
     _birthdayController.dispose();
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
     super.dispose();
   }
 
@@ -188,7 +197,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userId = userProvider.user?['UserID'] ?? userProvider.user?['userID'];
 
-    final updateData = {
+    // 1. Tạo Map chứa dữ liệu cập nhật
+    final updateData = <String, dynamic>{
       'FullName': _nameController.text.trim(),
       'Email': _emailController.text.trim(),
       'Avatar': _avatarUrl,
@@ -197,13 +207,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       'Birthday': _birthdayController.text.trim().isEmpty ? null : _birthdayController.text.trim(),
     };
 
+    // 2. BẮT BUỘC: Đưa oldPassword và newPassword vào updateData nếu người dùng nhập mật khẩu mới
+    final newPassword = _newPasswordController.text.trim();
+    final oldPassword = _oldPasswordController.text.trim();
+
+    if (newPassword.isNotEmpty) {
+      updateData['oldPassword'] = oldPassword;
+      updateData['newPassword'] = newPassword;
+    }
+
     try {
+      // Gửi request lên Backend
       final res = await ApiService.put('/users/$userId', updateData);
 
       if (res.statusCode == 200 || res.statusCode == 204) {
-        final updatedUser = Map<String, dynamic>.from(userProvider.user!);
-        updatedUser.addAll(updateData);
-        userProvider.setUser(updatedUser);
+        final body = jsonDecode(res.body);
+        if (body is Map && body.containsKey('user')) {
+          userProvider.setUser(Map<String, dynamic>.from(body['user']));
+        }
+
+        _oldPasswordController.clear();
+        _newPasswordController.clear();
 
         setState(() {
           _isEditing = false;
@@ -217,18 +241,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
           );
         }
-        Provider.of<NotificationProvider>(context, listen: false).addNotification(
-          title: 'Cập nhật tài khoản thành công',
-          message: 'Bạn vừa cập nhật thông tin cá nhân.',
-          type: 'account',
-        );
       } else {
-        throw Exception('Cập nhật thất bại');
+        String errorMessage = 'Cập nhật thất bại!';
+        try {
+          final body = jsonDecode(res.body);
+          if (body is Map && body.containsKey('message')) {
+            errorMessage = body['message'];
+          }
+        } catch (_) {}
+
+        throw Exception(errorMessage);
       }
     } catch (e) {
       if (mounted) {
+        final errorMsg = e.toString().replaceFirst('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -236,9 +264,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  InputDecoration _buildInputDecoration(String labelText, {Widget? suffixIcon, bool isDisabled = false}) {
+  InputDecoration _buildInputDecoration(String labelText, {Widget? suffixIcon, bool isDisabled = false, String? hintText}) {
     return InputDecoration(
       labelText: labelText,
+      hintText: hintText,
       labelStyle: TextStyle(color: isDisabled ? Colors.grey : const Color(0xFF475569)),
       filled: isDisabled || !_isEditing,
       fillColor: isDisabled ? const Color(0xFFF1F5F9) : (_isEditing ? Colors.white : const Color(0xFFF8FAFC)),
@@ -407,6 +436,68 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         if (val != null) setState(() => _gender = val);
                       }
                     : null,
+              ),
+              const SizedBox(height: 16),
+
+              // --- Mật khẩu cũ ---
+              TextFormField(
+                controller: _oldPasswordController,
+                enabled: _isEditing,
+                obscureText: _obscureOldPassword,
+                decoration: _buildInputDecoration(
+                  'Mật khẩu cũ',
+                  hintText: 'Để trống nếu không đổi mật khẩu',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureOldPassword ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureOldPassword = !_obscureOldPassword;
+                      });
+                    },
+                  ),
+                ),
+                validator: (v) {
+                  // Nếu nhập Mật khẩu mới mà bỏ trống Mật khẩu cũ
+                  if (_newPasswordController.text.trim().isNotEmpty && (v == null || v.trim().isEmpty)) {
+                    return 'Vui lòng nhập mật khẩu cũ để xác thực';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // --- Mật khẩu mới ---
+              TextFormField(
+                controller: _newPasswordController,
+                enabled: _isEditing,
+                obscureText: _obscureNewPassword,
+                decoration: _buildInputDecoration(
+                  'Mật khẩu mới',
+                  hintText: 'Để trống nếu không đổi mật khẩu',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureNewPassword ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureNewPassword = !_obscureNewPassword;
+                      });
+                    },
+                  ),
+                ),
+                validator: (v) {
+                  final newPass = v?.trim() ?? '';
+                  if (newPass.isNotEmpty) {
+                    if (newPass.length < 6) {
+                      return 'Mật khẩu mới phải từ 6 ký tự trở lên';
+                    }
+                  }
+                  return null; // Không so sánh với oldPass ở đây nữa!
+                },
               ),
               const SizedBox(height: 28),
 

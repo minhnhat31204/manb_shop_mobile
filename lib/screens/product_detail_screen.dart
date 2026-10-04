@@ -11,7 +11,6 @@ import '../providers/user_provider.dart';
 import '../services/api_service.dart';
 import 'cart_screen.dart';
 import 'checkout_screen.dart';
-import 'login_options_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -40,6 +39,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   int _selectedRating = 5;
   final TextEditingController _reviewController = TextEditingController();
   bool _isSubmittingReview = false;
+  bool _isExpandedSpecs = false;
 
   @override
   void initState() {
@@ -47,17 +47,50 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     _tabController = TabController(length: 2, vsync: this);
     _fetchRelatedProducts();
 
-    // Kiểm tra quyền đánh giá khi vào từ trang Chi tiết hóa đơn
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkReviewEligibility();
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _reviewController.dispose();
+    super.dispose();
+  }
+
+  String extractBrand(String productName) {
+    if (productName.trim().isEmpty) return 'KHÔNG XÁC ĐỊNH';
+    List<String> words = productName.trim().split(RegExp(r'\s+'));
+    for (String word in words) {
+      String cleanWord = word.replaceAll(RegExp(r'^[^\w]+|[^\w]+$'), '');
+      if (cleanWord.isNotEmpty && RegExp(r'^[A-Z0-9]+$').hasMatch(cleanWord)) {
+        return cleanWord;
+      }
+    }
+    return words[0].toUpperCase();
+  }
+
+  int? _parseInt(dynamic val) {
+    if (val == null) return null;
+    if (val is int) return val;
+    if (val is double) return val.toInt();
+    if (val is String) return int.tryParse(val);
+    return null;
+  }
+
+  double _toDouble(dynamic val, double fallback) {
+    if (val == null) return fallback;
+    if (val is double) return val;
+    if (val is int) return val.toDouble();
+    if (val is String) return double.tryParse(val) ?? fallback;
+    return fallback;
   }
 
   Future<void> _checkReviewEligibility() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userId = userProvider.currentUserId;
 
-    // Lấy ProductID an toàn hơn từ Map product
     final dynamic rawProductId =
         widget.product['ProductID'] ??
         widget.product['PRODUCTID'] ??
@@ -72,20 +105,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         (status == 'completed' ||
             status == 'delivered' ||
             status == 'đã giao')) {
-      final int productId = (rawProductId is int)
-          ? rawProductId
-          : int.parse(rawProductId.toString());
+      final int? productId = _parseInt(rawProductId);
 
-      bool canReview = await ApiService.checkCanReview(
-        widget.fromOrderId!,
-        productId,
-        userId,
-      );
-      if (mounted) {
-        setState(() {
-          _canUserReview = canReview;
-          _isCheckingReview = false;
-        });
+      if (productId != null) {
+        bool canReview = await ApiService.checkCanReview(
+          widget.fromOrderId!,
+          productId,
+          userId,
+        );
+        if (mounted) {
+          setState(() {
+            _canUserReview = canReview;
+            _isCheckingReview = false;
+          });
+        }
+      } else {
+        if (mounted) setState(() => _isCheckingReview = false);
       }
     } else {
       if (mounted) {
@@ -102,7 +137,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       return;
     }
 
-    // 1. Kiểm tra từ OrderID
     if (widget.fromOrderId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -125,7 +159,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       return;
     }
 
-    // 2. Lấy productId an toàn với nhiều trường hợp tên key
     final dynamic rawProductId =
         widget.product['ProductID'] ??
         widget.product['PRODUCTID'] ??
@@ -133,16 +166,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         widget.product['Id'] ??
         widget.product['ID'];
 
-    if (rawProductId == null) {
+    final int? productId = _parseInt(rawProductId);
+
+    if (productId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Lỗi: Không lấy được ID sản phẩm!')),
       );
       return;
     }
-
-    final int productId = (rawProductId is int)
-        ? rawProductId
-        : int.parse(rawProductId.toString());
 
     setState(() => _isSubmittingReview = true);
 
@@ -162,7 +193,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             context,
           ).showSnackBar(const SnackBar(content: Text('Đánh giá thành công!')));
           setState(() {
-            _canUserReview = false; // Khóa không cho đánh giá tiếp
+            _canUserReview = false;
             _reviewController.clear();
           });
         } else {
@@ -183,31 +214,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  // Hàm hỗ trợ ép kiểu số an toàn chống văng app
-  double _toDouble(dynamic val, double fallback) {
-    if (val == null) return fallback;
-    if (val is double) return val;
-    if (val is int) return val.toDouble();
-    if (val is String) return double.tryParse(val) ?? fallback;
-    return fallback;
-  }
-
-  // Lấy dữ liệu danh sách sản phẩm liên quan từ Database
   Future<void> _fetchRelatedProducts() async {
-    final String productName = widget.product['ProductName'] ?? widget.product['PRODUCTNAME'] ?? '';
-    final String currentBrand = (widget.product['Brand'] != null && widget.product['Brand'].toString().isNotEmpty)
-        ? widget.product['Brand']
+    final String productName =
+        widget.product['ProductName'] ?? widget.product['PRODUCTNAME'] ?? '';
+    final String currentBrand =
+        (widget.product['Brand'] != null &&
+            widget.product['Brand'].toString().isNotEmpty)
+        ? widget.product['Brand'].toString()
         : extractBrand(productName);
     final dynamic currentId =
         widget.product['ProductID'] ?? widget.product['PRODUCTID'] ?? 0;
 
-    if (currentBrand.toString().isEmpty) return;
+    if (currentBrand.isEmpty) return;
 
     try {
       final response = await http
@@ -230,11 +248,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     }
   }
 
-  // Mở ứng dụng gọi điện tới số 0909680426
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     try {
-      // Thử mở trực tiếp app gọi điện
       final bool launched = await launchUrl(launchUri);
       if (!launched) {
         debugPrint('Không thể thực hiện cuộc gọi đến $phoneNumber');
@@ -254,12 +270,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   Widget build(BuildContext context) {
     final Map<String, dynamic> p = widget.product;
 
-    // Lấy dữ liệu thực tế từ Database
     final String category = p['CategoryName'] ?? p['CATEGORYNAME'] ?? 'Laptop';
     final String productName = p['ProductName'] ?? p['PRODUCTNAME'] ?? '';
-    final String brand = (p['Brand'] != null && p['Brand'].toString().isNotEmpty)
-    ? p['Brand']
-    : extractBrand(productName);
+    final String brand =
+        (p['Brand'] != null && p['Brand'].toString().isNotEmpty)
+        ? p['Brand'].toString()
+        : extractBrand(productName);
     final String rating = (p['Rating'] ?? p['RATING'] ?? '0').toString();
     final String imageUrl =
         p['ImageUrl'] ?? p['IMAGEURL'] ?? p['ImageURL'] ?? '';
@@ -370,7 +386,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       _buildDetailTabsSection(specDetails, description),
                       if (_relatedProducts.isNotEmpty)
                         _buildRelatedProductsSection(brand),
-
                       _buildReviewsSection(rating),
                       const SizedBox(height: 80),
                     ],
@@ -380,7 +395,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               _buildBottomActionBar(p),
             ],
           ),
-          // Nút gọi điện thoại chuyển hướng gọi đến 0909680426
           Positioned(
             right: 16,
             bottom: 130,
@@ -406,7 +420,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            // 1. Nút Trang chủ -> Quay về màn hình chính
             GestureDetector(
               onTap: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
@@ -430,12 +443,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               '  >  ',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
-
-            // 2. Nút Danh mục (VD: Laptop)
             GestureDetector(
               onTap: () {
-                // Chuyển hướng tới danh sách tất cả Laptop
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => ProductListScreen(category: category)));
                 debugPrint("Điều hướng tới danh mục: $category");
               },
               child: Text(
@@ -451,12 +460,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               '  >  ',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
-
-            // 3. Nút Thương hiệu (VD: Laptop HP)
             GestureDetector(
               onTap: () {
-                // Chuyển hướng tới danh sách sản phẩm lọc theo Thương hiệu
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => ProductListScreen(brand: brand)));
                 debugPrint("Điều hướng tới thương hiệu: $brand");
               },
               child: Text(
@@ -472,8 +477,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               '  >  ',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
-
-            // 4. Tên sản phẩm hiện tại (không bấm)
             Text(
               productName.length > 15
                   ? '${productName.substring(0, 15)}...'
@@ -545,13 +548,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               ),
               Consumer2<FavoriteProvider, UserProvider>(
                 builder: (context, favProvider, userProvider, child) {
-                  final userId = userProvider.currentUserId; // Lấy ID chuẩn
+                  final userId = userProvider.currentUserId;
                   final isFav = favProvider.isFavorite(widget.product);
 
                   return IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Color(0xFF1E40AF) : const Color(0xFF1E40AF),
+                      color: const Color(0xFF1E40AF),
                     ),
                     onPressed: () {
                       if (userId == null) {
@@ -577,7 +580,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Đã bỏ phần SKU và chỉ hiển thị Rating từ Database
   Widget _buildRatingSection(String rating) {
     return Container(
       color: Colors.white,
@@ -641,7 +643,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Phần Bạn sẽ nhận được (Giữ nguyên tĩnh)
   Widget _buildExtraVouchersSection() {
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -687,7 +688,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Phần Chọn 1 trong những khuyến mãi sau & Khuyến mãi liên quan (Giữ nguyên tĩnh)
   Widget _buildPromotionsSection() {
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -760,7 +760,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Phần Ưu đãi thanh toán (Giữ nguyên tĩnh)
   Widget _buildPaymentOffersSection() {
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -816,7 +815,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Phần Chính sách bán hàng & Dịch vụ khác (Giữ nguyên tĩnh)
   Widget _buildSalesPoliciesSection() {
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -861,10 +859,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Khai báo biến quản lý trạng thái mở rộng ở đầu class _ProductDetailScreenState:
-  bool _isExpandedSpecs = false;
-
-  // Thay thế hàm _buildDetailTabsSection cũ bằng hàm dưới đây:
   Widget _buildDetailTabsSection(
     Map<String, dynamic> specs,
     String description,
@@ -872,10 +866,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     final String productName =
         widget.product['ProductName'] ?? widget.product['PRODUCTNAME'] ?? '';
 
-    // Đồng bộ logic lấy Thương hiệu y chang hình 2 và hình 3
-    final String brand = (widget.product['Brand'] != null &&
+    final String brand =
+        (widget.product['Brand'] != null &&
             widget.product['Brand'].toString().isNotEmpty)
-        ? widget.product['Brand']
+        ? widget.product['Brand'].toString()
         : extractBrand(productName);
 
     final String warranty =
@@ -888,7 +882,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         widget.product['SKU'] ??
         'BQ5B3PT';
 
-    // Gom toàn bộ thông số vào Map
     final Map<String, String> displaySpecs = {
       'Thương hiệu': brand,
       'Bảo hành': warranty,
@@ -897,7 +890,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       'Part-number': partNumber,
     };
 
-    // Nối thêm các thông số kỹ thuật khác từ Database vào bảng
     specs.forEach((key, value) {
       if (value != null && !key.toString().toLowerCase().contains('price')) {
         displaySpecs[key.toString()] = value.toString();
@@ -928,8 +920,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             ],
           ),
           const Divider(height: 1, color: Color(0xFFE5E7EB)),
-
-          // Nội dung của Tab
           AnimatedBuilder(
             animation: _tabController,
             builder: (context, child) {
@@ -970,11 +960,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                     entries[index].value,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      // Bổ sung style màu xanh và font đậm nếu là dòng Thương hiệu
                                       color: entries[index].key == 'Thương hiệu'
                                           ? const Color.fromARGB(255, 0, 0, 0)
                                           : const Color.fromARGB(221, 0, 0, 0),
-                                      fontWeight: entries[index].key == 'Thương hiệu'
+                                      fontWeight:
+                                          entries[index].key == 'Thương hiệu'
                                           ? FontWeight.bold
                                           : FontWeight.w500,
                                     ),
@@ -1035,7 +1025,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Các sản phẩm liên quan từ Database
   Widget _buildRelatedProductsSection(String brand) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
@@ -1064,7 +1053,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     item['ProductName'] ?? item['PRODUCTNAME'] ?? '';
                 final String relImg =
                     item['ImageUrl'] ?? item['IMAGEURL'] ?? '';
-                final String relBrand = item['Brand'] ?? item['BRAND'] ?? brand;
+                final String relBrand =
+                    (item['Brand'] ?? item['BRAND'] ?? brand).toString();
 
                 final double origPrice = _toDouble(
                   item['Price'] ?? item['PRICE'],
@@ -1363,32 +1353,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  Widget _buildSpecRowTable(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBottomActionBar(Map<String, dynamic> product) {
     return Consumer2<UserProvider, CartProvider>(
       builder: (context, userProvider, cartProvider, child) {
@@ -1493,10 +1457,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     ),
                     onPressed: () async {
                       if (!userProvider.isLoggedIn) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LoginOptionsScreen(),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Vui lòng đăng nhập để thêm vào giỏ hàng!',
+                            ),
                           ),
                         );
                         return;
@@ -1530,12 +1495,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                       onPressed: () {
                         if (!userProvider.isLoggedIn) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LoginOptionsScreen(),
-                            ),
-                          );
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
                           return;
                         }
                         Navigator.push(
@@ -1569,12 +1530,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  // Phần Đặc điểm nổi bật (Lấy thông tin tóm tắt từ Database)
   Widget _buildHighlightsSection(
     Map<String, dynamic> p,
     Map<String, dynamic> specs,
   ) {
-    // Lấy dữ liệu động từ Database hoặc specs, nếu không có sẽ lấy giá trị mặc định từ sản phẩm
     final String cpu =
         specs['CPU'] ?? specs['cpu'] ?? p['CPU'] ?? p['cpu'] ?? 'Đang cập nhật';
     final String ram =
@@ -1614,7 +1573,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               ),
               GestureDetector(
                 onTap: () {
-                  // Chuyển sang Tab chi tiết khi bấm "Xem thông tin chi tiết"
                   _tabController.animateTo(0);
                 },
                 child: const Text(
@@ -1669,8 +1627,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             ),
           ),
           const SizedBox(height: 12),
-
-          // Tổng quan Rating
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -1712,8 +1668,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               ],
             ),
           ),
-
-          // Khung gửi đánh giá (Chỉ hiển thị khi đủ điều kiện: completed + chưa đánh giá)
           if (_canUserReview) ...[
             const SizedBox(height: 16),
             Container(
@@ -1818,10 +1772,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               ),
             ),
           ],
-
           const Divider(height: 28),
-
-          // Danh sách các đánh giá đã có từ Database
           FutureBuilder<List<dynamic>>(
             future: ApiService.getReviewsByProductId(productId),
             builder: (context, snapshot) {
@@ -1862,7 +1813,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       rev['User']?['FullName'] ??
                       'Người dùng';
                   final int stars =
-                      (rev['RATING'] ?? rev['Rating'] ?? 5) as int;
+                      _parseInt(rev['RATING'] ?? rev['Rating']) ?? 5;
                   final String comment = rev['COMMENT'] ?? rev['Comment'] ?? '';
                   final String? avatarUrl =
                       rev['Avatar'] ??
@@ -1880,26 +1831,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-  String extractBrand(String productName) {
-    if (productName.trim().isEmpty) return 'KHÔNG XÁC ĐỊNH';
-    List<String> words = productName.trim().split(RegExp(r'\s+'));
-    for (String word in words) {
-      String cleanWord = word.replaceAll(RegExp(r'^[^\w]+|[^\w]+$'), '');
-      if (cleanWord.isNotEmpty && RegExp(r'^[A-Z0-9]+$').hasMatch(cleanWord)) {
-        return cleanWord;
-      }
-    }
-    return words[0].toUpperCase();
-  }
-
-  // Widget từng mục Bình luận màu Xanh - Trắng
   Widget _buildReviewItem(
     String name,
     int stars,
     String comment,
     String? avatarUrl,
   ) {
-    // Xử lý tạo URL hoàn chỉnh cho Avatar nếu là đường dẫn tương đối
     String? finalAvatarUrl = avatarUrl;
     if (finalAvatarUrl != null && finalAvatarUrl.isNotEmpty) {
       if (!finalAvatarUrl.startsWith('http')) {
