@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../providers/cart_provider.dart';
 import 'promotion_screen.dart';
@@ -7,7 +8,7 @@ import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   final Function(int)? onSelectTab;
-  
+
   const CartScreen({super.key, this.onSelectTab});
 
   @override
@@ -112,282 +113,275 @@ class _CartScreenState extends State<CartScreen> {
       body: cartProvider.isLoading
           ? const Center(child: CircularProgressIndicator(color: primaryColor))
           : cartItems.isEmpty
-              ? _buildEmptyState(context)
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: cartItems.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                          final item = cartItems[index];
-                          final int cartItemId = item['ID'] ?? item['id'] ?? 0;
-                          final String title =
-                              item['ProductName'] ??
-                              item['PRODUCTNAME'] ??
-                              'Sản phẩm';
-                          final int productId =
-                              item['ProductID'] ?? item['PRODUCTID'] ?? 0;
-                          final String? imageUrl =
-                              item['ImageUrl'] ??
-                              item['IMAGEURL'] ??
-                              item['ImageURL'];
+          ? _buildEmptyState(context)
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: cartItems.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final item = cartItems[index];
+                      final int cartItemId = item['ID'] ?? item['id'] ?? 0;
+                      final String title =
+                          item['ProductName'] ??
+                          item['PRODUCTNAME'] ??
+                          'Sản phẩm';
+                      final int productId =
+                          item['ProductID'] ?? item['PRODUCTID'] ?? 0;
+                      final String? imageUrl =
+                          item['ImageUrl'] ??
+                          item['IMAGEURL'] ??
+                          item['ImageURL'];
 
-                          final double originalPrice = (item['Price'] ??
+                      final double originalPrice =
+                          (item['Price'] ??
                                   item['PRICE'] ??
                                   item['originalPrice'] ??
                                   0.0)
                               .toDouble();
-                          final double discountPrice = (item['DiscountPrice'] ??
+                      final double discountPrice =
+                          (item['DiscountPrice'] ??
                                   item['DISCOUNTPRICE'] ??
                                   item['discountPrice'] ??
                                   originalPrice)
                               .toDouble();
 
-                          final double actualOriginal =
-                              originalPrice > discountPrice ? originalPrice : 0;
-                          final int discountPercent = actualOriginal > discountPrice
-                              ? (((actualOriginal - discountPrice) /
-                                          actualOriginal) *
-                                      100)
-                                  .round()
-                              : 0;
+                      final double actualOriginal =
+                          originalPrice > discountPrice ? originalPrice : 0;
+                      final int discountPercent = actualOriginal > discountPrice
+                          ? (((actualOriginal - discountPrice) /
+                                        actualOriginal) *
+                                    100)
+                                .round()
+                          : 0;
 
-                          final int quantity =
-                              (item['Quantity'] ?? item['QUANTITY'] ?? 1) as int;
+                      final int quantity =
+                          (item['Quantity'] ?? item['QUANTITY'] ?? 1) as int;
 
-                          return Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 84,
-                                  height: 84,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF1F5F9),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Colors.grey.shade200,
+                          ],
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 84,
+                              height: 84,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: imageUrl != null && imageUrl.isNotEmpty
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        imageUrl,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.computer,
+                                      size: 40,
+                                      color: Colors.grey,
                                     ),
-                                  ),
-                                  child: imageUrl != null && imageUrl.isNotEmpty
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          child: Image.network(
-                                            imageUrl,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )
-                                      : const Icon(
-                                          Icons.computer,
-                                          size: 40,
-                                          color: Colors.grey,
-                                        ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              title,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                                height: 1.3,
-                                              ),
-                                            ),
+                                      Expanded(
+                                        child: Text(
+                                          title,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            height: 1.3,
                                           ),
-                                          InkWell(
-                                            onTap: () =>
-                                                _showDeleteConfirmationDialog(
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () =>
+                                            _showDeleteConfirmationDialog(
                                               context,
                                               cartProvider,
                                               cartItemId,
                                               title,
                                             ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(4.0),
-                                              child: Icon(
-                                                Icons.delete_outline,
-                                                color: Colors.redAccent,
-                                                size: 24,
-                                              ),
-                                            ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(4.0),
+                                          child: Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.redAccent,
+                                            size: 24,
                                           ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Mã SP: #$productId',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade500,
-                                          fontSize: 11,
                                         ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                formatCurrency(discountPrice),
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15,
-                                                  color: primaryColor,
-                                                ),
-                                              ),
-                                              if (actualOriginal >
-                                                  discountPrice) ...[
-                                                const SizedBox(height: 2),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      formatCurrency(
-                                                        actualOriginal,
-                                                      ),
-                                                      style: const TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.grey,
-                                                        decoration:
-                                                            TextDecoration
-                                                                .lineThrough,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      '-$discountPercent%',
-                                                      style: const TextStyle(
-                                                        color: Colors.redAccent,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 11,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                          Container(
-                                            height: 32,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey.shade300,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    if (quantity > 1) {
-                                                      cartProvider.updateQuantity(
-                                                        cartItemId,
-                                                        quantity - 1,
-                                                      );
-                                                    } else {
-                                                      _showDeleteConfirmationDialog(
-                                                        context,
-                                                        cartProvider,
-                                                        cartItemId,
-                                                        title,
-                                                      );
-                                                    }
-                                                  },
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.remove,
-                                                      size: 16,
-                                                      color: Colors.black87,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                  ),
-                                                  child: Text(
-                                                    '$quantity',
-                                                    style: const TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                                InkWell(
-                                                  onTap: () {
-                                                    cartProvider.updateQuantity(
-                                                      cartItemId,
-                                                      quantity + 1,
-                                                    );
-                                                  },
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.add,
-                                                      size: 16,
-                                                      color: Colors.black87,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Mã SP: #$productId',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade500,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            formatCurrency(discountPrice),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                              color: primaryColor,
+                                            ),
+                                          ),
+                                          if (actualOriginal >
+                                              discountPrice) ...[
+                                            const SizedBox(height: 2),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  formatCurrency(
+                                                    actualOriginal,
+                                                  ),
+                                                  style: const TextStyle(
+                                                    fontSize: 11,
+                                                    color: Colors.grey,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  '-$discountPercent%',
+                                                  style: const TextStyle(
+                                                    color: Colors.redAccent,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 11,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      Container(
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                if (quantity > 1) {
+                                                  cartProvider.updateQuantity(
+                                                    cartItemId,
+                                                    quantity - 1,
+                                                  );
+                                                } else {
+                                                  _showDeleteConfirmationDialog(
+                                                    context,
+                                                    cartProvider,
+                                                    cartItemId,
+                                                    title,
+                                                  );
+                                                }
+                                              },
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                ),
+                                                child: Icon(
+                                                  Icons.remove,
+                                                  size: 16,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                  ),
+                                              child: Text(
+                                                '$quantity',
+                                                style: const TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                cartProvider.updateQuantity(
+                                                  cartItemId,
+                                                  quantity + 1,
+                                                );
+                                              },
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                ),
+                                                child: Icon(
+                                                  Icons.add,
+                                                  size: 16,
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    _buildBottomCheckoutArea(context, cartProvider),
-                  ],
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
+                _buildBottomCheckoutArea(context, cartProvider),
+              ],
+            ),
     );
   }
 
@@ -395,42 +389,35 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          const SizedBox(height: 60),
           Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.08),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.shopping_cart_outlined,
-              size: 80,
-              color: primaryColor,
+            child: Lottie.asset(
+              'lib/animations/emptycart.json', 
+              width: 220, 
+              height: 220,
+              fit: BoxFit.contain,
+              repeat: true, // true nếu muốn hiệu ứng chạy lặp lại liên tục
             ),
           ),
           const SizedBox(height: 20),
           const Text(
-            'Giỏ hàng của bạn đang trống',
+            'Bạn chưa có sản phẩm nào trong giỏ',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              color: Colors.black54,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Hãy chọn những sản phẩm ưng ý để thêm vào giỏ hàng nhé!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-          ),
+
           const SizedBox(height: 24),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
               elevation: 0,
             ),
@@ -442,7 +429,7 @@ class _CartScreenState extends State<CartScreen> {
               }
             },
             child: const Text(
-              'Khám phá sản phẩm',
+              'Mua sắm ngay',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -488,18 +475,22 @@ class _CartScreenState extends State<CartScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.local_offer_outlined, color: primaryColor, size: 20),
+                  const Icon(
+                    Icons.local_offer_outlined,
+                    color: primaryColor,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   const Text(
                     'Ưu đãi & Khuyến mãi',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: hasVoucher
                           ? primaryColor.withValues(alpha: 0.1)

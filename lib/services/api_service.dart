@@ -283,4 +283,83 @@ class ApiService {
     final url = Uri.parse('$baseUrl/promotions');
     return await http.get(url);
   }
+
+  // =========================
+  // SUPPORT / CHAT
+  // =========================
+
+  static Future<http.Response> openSupportConversation({
+    int? userId,
+    String? visitorKey,
+    String? name,
+    String? email,
+  }) async {
+    final url = Uri.parse('$baseUrl/support/conversations/open');
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        if (userId != null && userId > 0) 'userId': userId,
+        if (visitorKey != null && visitorKey.isNotEmpty) 'visitorKey': visitorKey,
+        'name': name ?? 'Khách hàng',
+        if (email != null && email.isNotEmpty) 'email': email,
+      }),
+    );
+  }
+
+  static Future<http.Response> getSupportMessages(
+    int conversationId, {
+    String? role,
+    int? userId,
+    String? visitorKey,
+  }) async {
+    final Map<String, String> queryParams = {};
+    if (role != null && role.isNotEmpty) queryParams['role'] = role;
+    if (userId != null && userId > 0) queryParams['userId'] = userId.toString();
+    if (visitorKey != null && visitorKey.isNotEmpty) queryParams['visitorKey'] = visitorKey;
+
+    final uri = Uri.parse('$baseUrl/support/conversations/$conversationId/messages').replace(
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
+    return await http.get(uri);
+  }
+
+  static Future<http.Response> sendSupportMessage(
+    int conversationId, {
+    required String message,
+    String? role,
+    int? userId,
+    String? visitorKey,
+    String? senderName,
+  }) async {
+    final url = Uri.parse('$baseUrl/support/conversations/$conversationId/messages');
+    final Map<String, dynamic> body = {'message': message};
+    if (role != null) body['role'] = role;
+    if (userId != null && userId > 0) body['userId'] = userId;
+    if (visitorKey != null) body['visitorKey'] = visitorKey;
+    if (senderName != null) body['senderName'] = senderName;
+
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+  }
+
+  static Future<http.Response> requestSupportAiReply(
+    int conversationId, {
+    int? userId,
+    String? visitorKey,
+  }) async {
+    final url = Uri.parse('$baseUrl/support/conversations/$conversationId/ai-reply');
+    final Map<String, dynamic> body = {};
+    if (userId != null && userId > 0) body['userId'] = userId;
+    if (visitorKey != null) body['visitorKey'] = visitorKey;
+
+    return await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+  }
 }

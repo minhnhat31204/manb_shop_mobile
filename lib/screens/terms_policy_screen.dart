@@ -37,7 +37,7 @@ class TermsPolicyScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Cam kết bảo vệ quyền lợi và thông tin người dùng tại MANB Shop.',
+                      'Cam kết bảo vệ quyền lợi và thông tin người dùng tại Devora Shop.',
                       style: TextStyle(
                         color: Colors.blue.shade900,
                         fontSize: 13,
@@ -63,7 +63,7 @@ class TermsPolicyScreen extends StatelessWidget {
               icon: Icons.security,
               title: '2. Chính sách bảo mật',
               content:
-                  'Thông tin cá nhân (họ tên, số điện thoại, địa chỉ) chỉ được sử dụng cho mục đích xử lý đơn hàng và hỗ trợ khách hàng. MANB Shop cam kết không chia sẻ dữ liệu người dùng cho bên thứ ba vì mục đích thương mại.',
+                  'Thông tin cá nhân (họ tên, số điện thoại, địa chỉ) chỉ được sử dụng cho mục đích xử lý đơn hàng và hỗ trợ khách hàng. Devora Shop cam kết không chia sẻ dữ liệu người dùng cho bên thứ ba vì mục đích thương mại.',
             ),
 
             // Mục 3: Chính sách đổi trả & Hoàn tiền

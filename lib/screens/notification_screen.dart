@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../providers/user_provider.dart';
 import '../services/notification_service.dart';
@@ -123,6 +124,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final userId = Provider.of<UserProvider>(context).currentUserId;
+    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -148,15 +150,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ],
       ),
       body: userId == null
-          ? const Center(
-              child: Text(
-                'Vui lòng đăng nhập để xem thông báo',
-                style: TextStyle(color: Color(0xFF64748B)),
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 60),
+                  Container(
+                    child: Lottie.asset(
+                      'lib/animations/emptynotification.json', // Đổi tên file Lottie thông báo nếu muốn
+                      height: 220,
+                      fit: BoxFit.contain,
+                      repeat: true,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Vui lòng đăng nhập để xem thông báo',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
-            )
-          : _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF1E40AF)),
             )
           : _notifications.isEmpty
           ? Center(

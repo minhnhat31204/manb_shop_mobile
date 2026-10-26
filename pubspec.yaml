@@ -22,6 +22,8 @@ dependencies:
   google_sign_in: ^6.2.1
   firebase_auth: ^4.17.8
   shared_preferences: ^2.5.5
+  uuid: ^4.6.0
+  lottie: ^3.6.1
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +39,4 @@ flutter:
     - lib/images/bidv.png
     - lib/images/techcombank.png
     - lib/images/
+    - lib/animations/

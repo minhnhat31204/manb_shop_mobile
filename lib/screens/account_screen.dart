@@ -12,6 +12,8 @@ import 'address_book_screen.dart';
 import 'showroom_screen.dart';
 import 'user_profile_screen.dart';
 import 'terms_policy_screen.dart';
+import 'chat_screen.dart';
+import '../providers/chat_provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -123,11 +125,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   backgroundColor: Colors.white,
                   foregroundColor: const Color(0xFF1E40AF),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 48,
-                    vertical: 8,
+                    horizontal: 100,
+                    vertical: 12,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
                 onPressed: () {
@@ -135,7 +137,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 },
                 child: const Text(
                   'Đăng ký / Đăng nhập',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
             ),

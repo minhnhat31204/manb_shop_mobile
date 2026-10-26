@@ -352,8 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return const Text(
-              'MANB.VN',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              'DEVORA.VN',
+              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
             );
           },
         ),
@@ -956,15 +956,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 0.0, right: 0.0),
-        child: FloatingActionButton(
-          backgroundColor: const Color(0xFF1E40AF),
-          heroTag: null,
-          onPressed: () => _makePhoneCall('0909680426'),
-          child: const Icon(Icons.call, color: Colors.white),
-        ),
-      ),
+      
     );
   }
 

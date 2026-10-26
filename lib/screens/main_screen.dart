@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart_provider.dart';
+import '../providers/chat_provider.dart';
 import 'home_screen.dart';
 import 'category_sheet.dart';
 import 'product_list_screen.dart';
 import 'cart_screen.dart';
 import 'account_screen.dart';
 import 'notification_screen.dart';
+import 'chat_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -39,6 +41,127 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _isCategoryOpen = false;
     });
+  }
+
+  void _showChatOptionsModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Text(
+                'Trung tâm Hỗ trợ & Tư vấn Trực tuyến',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Chọn kênh hỗ trợ để được giải đáp thắc mắc và kiểm tra máy nhanh nhất:',
+                style: TextStyle(fontSize: 12.5, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 18),
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                tileColor: const Color(0xFFFAF5FF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFE9D5FF)),
+                ),
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text('🤖', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                title: Row(
+                  children: [
+                    const Text('Trợ lý AI 24/7', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF7C3AED),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text('PRO', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                subtitle: const Text('Tư vấn cấu hình máy & tra cứu tồn kho tức thì', style: TextStyle(fontSize: 11.5)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ChatScreen(initialChannel: ChatChannel.ai),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                tileColor: const Color(0xFFEFF6FF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFBFDBFE)),
+                ),
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF2563EB), Color(0xFF0284C7)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text('👨‍💼', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                title: const Text('Nhắn tin CSKH', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Kết nối nhân viên trực tuyến đồng bộ với Web', style: TextStyle(fontSize: 11.5)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ChatScreen(initialChannel: ChatChannel.staff),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _getCategoryTabWidget() {
@@ -74,12 +197,11 @@ class _MainScreenState extends State<MainScreen> {
             _selectedIndex = index;
           });
         },
-      ), // 👈 Đã thêm callback nhận việc đổi Tab
+      ),
       const NotificationScreen(),
       const AccountScreen(),
     ];
 
-    // Lắng nghe tổng số lượng items trong giỏ hàng từ CartProvider
     final cartItemCount = context.watch<CartProvider>().totalItemsCount;
 
     return Scaffold(
@@ -129,6 +251,29 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ),
+
+          // Floating Support Chat Button (Tương tự SupportWidget trên Web)
+          if (!_isCategoryOpen)
+            Positioned(
+              right: 16,
+              bottom: bottomNavHeight + 16,
+              child: FloatingActionButton.extended(
+                heroTag: 'support_chat_fab',
+                onPressed: _showChatOptionsModal,
+                backgroundColor: const Color(0xFF1E40AF),
+                elevation: 6,
+                icon: const Text('💬', style: TextStyle(fontSize: 18)),
+                label: const Text(
+                  'Hỗ trợ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+
           Positioned(
             left: 0,
             right: 0,
@@ -201,3 +346,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+

@@ -8,7 +8,7 @@
     </queries>
     
     <application
-        android:label="manb_shop_mobile"
+        android:label="devora_shop_mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
