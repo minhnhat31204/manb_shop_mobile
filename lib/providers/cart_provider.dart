@@ -8,7 +8,7 @@ class CartProvider extends ChangeNotifier {
   bool _isLoading = false;
   
   int? _userId;
-  final String baseUrl = 'http://192.168.154.1:5000/api';
+  final String baseUrl = 'https://devora.id.vn/api';
 
   List<Map<String, dynamic>> get cartItems => _cartItems;
   Map<String, dynamic>? get selectedVoucher => _selectedVoucher;

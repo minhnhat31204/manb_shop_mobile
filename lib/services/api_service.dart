@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class ApiService {
   // IP máy tính chạy server Node.js của bạn
-  static const String baseUrl = 'http://192.168.154.1:5000/api';
+  static const String baseUrl = 'https://devora.id.vn/api';
 
   // 1. Đăng nhập
   static Future<http.Response> login(Map<String, dynamic> credentials) async {
@@ -27,8 +28,10 @@ class ApiService {
   }
 
   // 3. Lưu người dùng mới vào Database (Đăng ký)
-  static Future<http.Response> registerUser(Map<String, dynamic> userData) async {
-    final url = Uri.parse('$baseUrl/auth/register'); 
+  static Future<http.Response> registerUser(
+    Map<String, dynamic> userData,
+  ) async {
+    final url = Uri.parse('$baseUrl/auth/register');
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -47,7 +50,10 @@ class ApiService {
   }
 
   // 5. Xác thực mã OTP khôi phục mật khẩu (SỬA LẠI ĐÚNG ROUTE BACKEND)
-  static Future<http.Response> verifyPasswordResetOtp(String email, String otp) async {
+  static Future<http.Response> verifyPasswordResetOtp(
+    String email,
+    String otp,
+  ) async {
     final url = Uri.parse('$baseUrl/auth/forgot-password/verify-otp');
     return await http.post(
       url,
@@ -57,25 +63,32 @@ class ApiService {
   }
 
   // 6. Đặt lại mật khẩu mới (SỬA LẠI ĐÚNG ROUTE BACKEND)
-  static Future<http.Response> resetPassword(String email, String newPassword) async {
+  static Future<http.Response> resetPassword(
+    String email,
+    String newPassword,
+  ) async {
     final url = Uri.parse('$baseUrl/auth/forgot-password/reset');
     return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'channel': 'email', 'email': email, 'newPassword': newPassword}),
+      body: jsonEncode({
+        'channel': 'email',
+        'email': email,
+        'newPassword': newPassword,
+      }),
     );
   }
 
   // Lấy danh sách tin công nghệ từ API
   static Future<http.Response> getTechNews() async {
-    final url = Uri.parse('$baseUrl/news'); 
+    final url = Uri.parse('$baseUrl/news');
     return await http.get(url);
   }
 
   // Lấy thông tin user bằng số điện thoại
   static Future<Map<String, dynamic>?> getUserByPhone(String phone) async {
     try {
-      final url = Uri.parse('$baseUrl/users/by-phone/$phone'); 
+      final url = Uri.parse('$baseUrl/users/by-phone/$phone');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -109,10 +122,7 @@ class ApiService {
       final response = await http.post(
         Uri.parse('$baseUrl/favorites/toggle'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'userId': userId,
-          'productId': productId,
-        }),
+        body: jsonEncode({'userId': userId, 'productId': productId}),
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -128,7 +138,9 @@ class ApiService {
     return http.get(Uri.parse('$baseUrl/categories'));
   }
 
-  static Future<http.Response> createOrder(Map<String, dynamic> orderData) async {
+  static Future<http.Response> createOrder(
+    Map<String, dynamic> orderData,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/orders'),
       headers: {'Content-Type': 'application/json'},
@@ -157,10 +169,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl/favorites'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'UserID': userId,
-        'ProductID': productId,
-      }),
+      body: jsonEncode({'UserID': userId, 'ProductID': productId}),
     );
     return response.statusCode == 200 || response.statusCode == 201;
   }
@@ -172,7 +181,10 @@ class ApiService {
     return response.statusCode == 200;
   }
 
-  static Future<http.Response> put(String endpoint, Map<String, dynamic> data) async {
+  static Future<http.Response> put(
+    String endpoint,
+    Map<String, dynamic> data,
+  ) async {
     final url = Uri.parse('$baseUrl$endpoint');
     return await http.put(
       url,
@@ -181,10 +193,16 @@ class ApiService {
     );
   }
 
-  static Future<bool> checkCanReview(int orderId, int productId, int userId) async {
+  static Future<bool> checkCanReview(
+    int orderId,
+    int productId,
+    int userId,
+  ) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/reviews/check-eligibility?orderId=$orderId&productId=$productId&userId=$userId'),
+        Uri.parse(
+          '$baseUrl/reviews/check-eligibility?orderId=$orderId&productId=$productId&userId=$userId',
+        ),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -198,7 +216,9 @@ class ApiService {
 
   static Future<List<dynamic>> getProductReviews(int productId) async {
     try {
-      final res = await http.get(Uri.parse('$baseUrl/reviews/product/$productId'));
+      final res = await http.get(
+        Uri.parse('$baseUrl/reviews/product/$productId'),
+      );
       if (res.statusCode == 200) {
         return jsonDecode(res.body);
       }
@@ -300,7 +320,8 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         if (userId != null && userId > 0) 'userId': userId,
-        if (visitorKey != null && visitorKey.isNotEmpty) 'visitorKey': visitorKey,
+        if (visitorKey != null && visitorKey.isNotEmpty)
+          'visitorKey': visitorKey,
         'name': name ?? 'Khách hàng',
         if (email != null && email.isNotEmpty) 'email': email,
       }),
@@ -316,11 +337,12 @@ class ApiService {
     final Map<String, String> queryParams = {};
     if (role != null && role.isNotEmpty) queryParams['role'] = role;
     if (userId != null && userId > 0) queryParams['userId'] = userId.toString();
-    if (visitorKey != null && visitorKey.isNotEmpty) queryParams['visitorKey'] = visitorKey;
+    if (visitorKey != null && visitorKey.isNotEmpty)
+      queryParams['visitorKey'] = visitorKey;
 
-    final uri = Uri.parse('$baseUrl/support/conversations/$conversationId/messages').replace(
-      queryParameters: queryParams.isNotEmpty ? queryParams : null,
-    );
+    final uri = Uri.parse(
+      '$baseUrl/support/conversations/$conversationId/messages',
+    ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
     return await http.get(uri);
   }
 
@@ -332,7 +354,9 @@ class ApiService {
     String? visitorKey,
     String? senderName,
   }) async {
-    final url = Uri.parse('$baseUrl/support/conversations/$conversationId/messages');
+    final url = Uri.parse(
+      '$baseUrl/support/conversations/$conversationId/messages',
+    );
     final Map<String, dynamic> body = {'message': message};
     if (role != null) body['role'] = role;
     if (userId != null && userId > 0) body['userId'] = userId;
@@ -351,7 +375,9 @@ class ApiService {
     int? userId,
     String? visitorKey,
   }) async {
-    final url = Uri.parse('$baseUrl/support/conversations/$conversationId/ai-reply');
+    final url = Uri.parse(
+      '$baseUrl/support/conversations/$conversationId/ai-reply',
+    );
     final Map<String, dynamic> body = {};
     if (userId != null && userId > 0) body['userId'] = userId;
     if (visitorKey != null) body['visitorKey'] = visitorKey;
