@@ -1113,18 +1113,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             constraints: const BoxConstraints(),
                             icon: Icon(
                               isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Color(0xFF1E40AF) : const Color(0xFF1E40AF),
+                              color: isFav ? Colors.red : const Color(0xFF1E40AF),
                               size: 20,
                             ),
                             onPressed: () {
-                              if (userId == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Vui lòng đăng nhập để yêu thích sản phẩm!'),
-                                  ),
-                                );
-                                return;
-                              }
                               favProvider.toggleFavorite(item, userId);
                             },
                           );

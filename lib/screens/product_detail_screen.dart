@@ -554,20 +554,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   return IconButton(
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: const Color(0xFF1E40AF),
+                      color: isFav ? Colors.red : const Color(0xFF1E40AF),
                     ),
                     onPressed: () {
-                      if (userId == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Vui lòng đăng nhập để yêu thích sản phẩm!',
-                            ),
-                          ),
-                        );
-                        return;
-                      }
-
                       favProvider.toggleFavorite(widget.product, userId);
                     },
                   );

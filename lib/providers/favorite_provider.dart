@@ -48,11 +48,9 @@ class FavoriteProvider extends ChangeNotifier {
   }
 
   Future<void> toggleFavorite(Map<String, dynamic> product, dynamic userId) async {
-    final intParsedUser = userId is int ? userId : int.tryParse(userId.toString());
     final intParsedProduct = _extractProductId(product);
-
-    if (intParsedUser == null || intParsedProduct == null) {
-      debugPrint('Thiếu hoặc sai kiểu dữ liệu userId/productId');
+    if (intParsedProduct == null) {
+      debugPrint('Sai kiểu dữ liệu productId');
       return;
     }
 
@@ -65,6 +63,14 @@ class FavoriteProvider extends ChangeNotifier {
       _favoriteProducts.add(product);
       notifyListeners();
     }
+
+    if (userId == null) {
+      // Cho phép khách yêu thích mà không yêu cầu đăng nhập
+      return;
+    }
+
+    final intParsedUser = userId is int ? userId : int.tryParse(userId.toString());
+    if (intParsedUser == null) return;
 
     // Gọi API backend
     try {

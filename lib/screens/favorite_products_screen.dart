@@ -229,19 +229,11 @@ class _FavoriteProductsScreenState extends State<FavoriteProductsScreen> {
                                   constraints: const BoxConstraints(),
                                   icon: const Icon(
                                     Icons.favorite,
-                                    color: Color(0xFF1E40AF),
+                                    color: Colors.red,
                                     size: 20,
                                   ),
                                   onPressed: () {
-                                    if (userId != null) {
-                                      favProvider.toggleFavorite(item, userId);
-                                    } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Vui lòng đăng nhập để thực hiện thao tác!'),
-                                        ),
-                                      );
-                                    }
+                                    favProvider.toggleFavorite(item, userId);
                                   },
                                 ),
                               ],
