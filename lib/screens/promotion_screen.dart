@@ -74,7 +74,11 @@ class _PromotionScreenState extends State<PromotionScreen> {
                       errorBuilder: (_, _, _) => const Icon(Icons.local_offer, size: 40, color: Colors.blue),
                     ),
                     title: Text(voucher['Name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Giảm ${voucher['DiscountPercentage']}%\nHSD: ${formatDate(voucher['ExpiryDate'])}'),
+                    subtitle: Text(
+                      'Giảm ${voucher['DiscountPercentage']}%\n'
+                      'HSD: ${formatDate(voucher['ExpiryDate'])}\n'
+                      'ĐK: ${voucher['Condition'] ?? (voucher['MinOrderAmount'] != null ? 'Đơn từ ${voucher['MinOrderAmount']}đ' : 'Không có')}',
+                    ),
                     trailing: Checkbox(
                       activeColor: const Color(0xFF1E40AF), // Màu tích xanh
                       value: isSelected,
